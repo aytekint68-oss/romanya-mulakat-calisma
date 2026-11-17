@@ -26,7 +26,7 @@
   body { margin: 0; background: var(--bg); color: var(--text); overflow-x: hidden; }
 
   header {
-    background: var(--navy); color: #fff; padding: 12px 16px;
+    background: var(--navy); color: #fff; padding: 12px 20px;
     display: flex; align-items: center; justify-content: space-between; gap: 10px;
     position: relative;
   }
@@ -60,20 +60,13 @@
   .flag span:nth-child(2) { flex: 1; background: #FCD116; }
   .flag span:nth-child(3) { flex: 1; background: #CE1126; }
 
-  .header-actions {
-    display: flex; align-items: center; gap: 10px; margin-left: auto; flex-shrink: 0;
-  }
-  .badge-progress {
-    background: var(--slate); padding: 6px 12px; border-radius: 6px; font-size: 0.88rem; font-weight: 600;
-    white-space: nowrap;
-  }
-  .mobile-progress-box {
-    display: none;
+  .progress-box {
+    display: block;
     background: var(--navy);
     color: #fff;
     padding: 9px 12px;
     border-radius: 6px;
-    font-size: 0.86rem;
+    font-size: 0.88rem;
     font-weight: 700;
     text-align: center;
   }
@@ -93,14 +86,17 @@
   .btn-navy { background: var(--navy); }
   .btn-sm { padding: 6px 10px; font-size: 0.82rem; }
 
-  /* Masaüstü Sekme Çubuğu */
+  /* Masaüstü 3 Sekmeli Çubuk */
   .nav-tabs {
     background: #162C49; padding: 8px 20px 0; display: flex; gap: 8px; flex-wrap: wrap;
   }
   .tab-btn {
     background: rgba(255,255,255,0.12); color: #E2E8F0; border: none;
     padding: 10px 18px; border-radius: 8px 8px 0 0; font-weight: 700; font-size: 0.95rem;
-    cursor: pointer; display: inline-flex; align-items: center; gap: 8px;
+    cursor: pointer; display: inline-flex; align-items: center; gap: 8px; transition: background .15s;
+  }
+  .tab-btn:hover {
+    background: rgba(255,255,255,0.2);
   }
   .tab-btn.active {
     background: var(--bg); color: var(--navy);
@@ -137,11 +133,6 @@
     color: var(--navy);
     border-color: #93C5FD;
   }
-  .mobile-menu-exam {
-    background: rgba(22, 163, 74, 0.28);
-    border-color: rgba(74, 222, 128, 0.45);
-    color: #DCFCE7;
-  }
 
   .filters {
     background: #E2E8F0; padding: 10px 16px; display: flex; flex-wrap: nowrap; gap: 8px; align-items: center;
@@ -158,10 +149,10 @@
   .list-panel { order: 1; }
   .detail-panel { order: 2; }
 
-  .oath-container {
+  .oath-container, .exam-page-container {
     max-width: 1000px; margin: 18px auto; padding: 0 16px; display: flex; flex-direction: column; gap: 16px;
   }
-  .oath-hero {
+  .oath-hero, .exam-card {
     background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 20px;
     border-left: 6px solid var(--navy);
   }
@@ -216,28 +207,6 @@
     font-size: 0.86rem; color: #334155; margin-top: auto;
   }
 
-  .modal-backdrop {
-    position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6);
-    display: none; align-items: center; justify-content: center; padding: 16px; z-index: 100;
-    overflow: hidden;
-  }
-  .modal-backdrop.open { display: flex; }
-  .modal {
-    background: #fff; width: 100%; max-width: 720px; border-radius: 10px; overflow: hidden;
-    max-height: 92vh; display: flex; flex-direction: column;
-  }
-  .modal-header {
-    background: var(--navy); color: #fff; padding: 14px 18px;
-    display: flex; justify-content: space-between; align-items: center; gap: 10px;
-    font-weight: 700; flex-shrink: 0;
-  }
-  .modal-header span {
-    min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-  }
-  .modal-body {
-    padding: 20px; overflow-y: auto; overflow-x: hidden;
-    display: flex; flex-direction: column; gap: 14px; flex: 1; min-width: 0;
-  }
   .box {
     background: #F8FAFC; border: 1px solid var(--border); border-radius: 8px; padding: 14px;
     width: 100%; max-width: 100%; min-width: 0; word-wrap: break-word; overflow-wrap: break-word;
@@ -251,10 +220,10 @@
     border-radius: 6px; font-size: 1rem; margin-top: 8px;
   }
   .report-table-wrap {
-    width: 100%; max-width: 100%; overflow-x: auto; flex: 1; min-height: 160px;
+    width: 100%; max-width: 100%; overflow-x: auto;
   }
-  table { width: 100%; border-collapse: collapse; font-size: 0.86rem; }
-  th, td { border: 1px solid #E2E8F0; padding: 7px 8px; text-align: left; word-break: break-word; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+  th, td { border: 1px solid #E2E8F0; padding: 8px 10px; text-align: left; word-break: break-word; }
   th { background: #F1F5F9; }
 
   @media (max-width: 860px) {
@@ -262,8 +231,6 @@
     .header-left { gap: 9px; }
     .hamburger-btn { display: inline-flex; align-items: center; justify-content: center; padding: 6px 9px; font-size: 1.15rem; }
     .nav-tabs { display: none; }
-    .header-actions { display: none; }
-    .mobile-progress-box { display: block; }
 
     .brand { gap: 8px; }
     .flag { width: 26px; height: 17px; }
@@ -277,7 +244,6 @@
     .brand-main { font-size: 0.86rem; font-weight: 800; letter-spacing: 0.2px; }
     .brand-sub { font-size: 0.75rem; font-weight: 600; color: #E2E8F0; }
 
-    /* Mobilde filtrelerin tek satırda yan yana sığması */
     .filters { padding: 8px 10px; gap: 5px; flex-wrap: nowrap; }
     .filters select, .filters input {
       flex: 1 1 0;
@@ -293,18 +259,8 @@
     .list-panel { order: 2; }
     .list-wrapper { max-height: 44vh; }
 
-    /* Mobilde Mülakat Sınav Modülünün ekranı yatay ve dikey tam kaplaması */
-    .modal-backdrop { padding: 0; }
-    .modal {
-      width: 100vw;
-      max-width: 100vw;
-      height: 100vh;
-      height: 100dvh;
-      max-height: 100dvh;
-      border-radius: 0;
-    }
-    .modal-header { padding: 12px 14px; font-size: 0.94rem; }
-    .modal-body { padding: 14px; gap: 12px; }
+    .exam-page-container { margin: 10px auto; padding: 0 10px; }
+    .exam-card { padding: 14px; }
     .box { padding: 12px; }
   }
 </style>
@@ -319,13 +275,9 @@
       <div class="brand-title">
         <span class="brand-main">ROMANYA KONSOLOSLUĞU</span>
         <span class="brand-sep">-</span>
-        <span class="brand-sub">RUMENCE MÜLAKAT VE YEMİN ASİSTANI <small style="opacity:.75;font-weight:400;">(v3.11)</small></span>
+        <span class="brand-sub">RUMENCE MÜLAKAT VE YEMİN ASİSTANI <small style="opacity:.75;font-weight:400;">(v3.12)</small></span>
       </div>
     </div>
-  </div>
-  <div class="header-actions">
-    <button type="button" class="btn btn-green desktop-exam-btn" onclick="openExamModal()">🎙️ Mülakat Sınav Modülü</button>
-    <div class="badge-progress" id="progressBadge">İlerleme: 0 / 74 (%0)</div>
   </div>
 </header>
 
@@ -339,16 +291,17 @@
     <span>📜 Yemin Metni Ezber</span>
     <span id="mobCheckOath"></span>
   </button>
-  <button type="button" class="mobile-menu-item mobile-menu-exam" onclick="openExamModal()">
+  <button type="button" class="mobile-menu-item" id="mobBtnExam" onclick="selectMobileTab('exam')">
     <span>🎙️ Mülakat Sınav Modülü</span>
-    <span>▶</span>
+    <span id="mobCheckExam"></span>
   </button>
 </div>
 
-<!-- Masaüstü Sekme Çubuğu -->
+<!-- Masaüstü 3 Sekmeli Çubuk -->
 <div class="nav-tabs">
   <button type="button" class="tab-btn active" id="tabBtnQuestions" onclick="switchTab('questions')">💬 Mülakat Soruları (74)</button>
   <button type="button" class="tab-btn" id="tabBtnOath" onclick="switchTab('oath')">📜 Yemin Metni Ezber (Jurământul)</button>
+  <button type="button" class="tab-btn" id="tabBtnExam" onclick="switchTab('exam')">🎙️ Mülakat Sınav Modülü</button>
 </div>
 
 <!-- SEKME 1: MÜLAKAT SORULARI (Varsayılan Açık) -->
@@ -409,8 +362,8 @@
         İpucu: Köşeli parantez yerlerinde kendi bilginizi söyleyebilmeniz için kısa bekleme yapılır.
       </div>
 
-      <!-- Mobilde Soru-Cevap Panelinin Altında Gösterilen İlerleme Durumu -->
-      <div class="mobile-progress-box" id="mobileProgressBadge">İlerleme: 0 / 74 (%0)</div>
+      <!-- PC ve Mobilde Soru-Cevap Paneli Altında İlerleme Durumu -->
+      <div class="progress-box" id="progressBadge">İlerleme: 0 / 74 (%0)</div>
     </div>
   </div>
 </div>
@@ -457,14 +410,15 @@
   </div>
 </div>
 
-<!-- Mülakat Sınav Modalı -->
-<div class="modal-backdrop" id="examModal">
-  <div class="modal">
-    <div class="modal-header">
-      <span id="examHeaderTitle">🎙️ SESLİ MÜLAKAT SINAV MODÜLÜ</span>
-      <button type="button" class="btn btn-red" style="padding:4px 10px;flex-shrink:0;" onclick="closeExamModal()">✕</button>
+<!-- SEKME 3: SESLİ MÜLAKAT SINAV MODÜLÜ -->
+<div id="viewExam" style="display:none;">
+  <div class="exam-page-container">
+    <div class="exam-card" style="border-left-color:var(--green);">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap;">
+        <div class="cat-tag" id="examHeaderTitle" style="font-size:0.9rem;">🎙️ SESLİ MÜLAKAT SINAV MODÜLÜ</div>
+      </div>
+      <div id="examBody" style="display:flex;flex-direction:column;gap:14px;"></div>
     </div>
-    <div class="modal-body" id="examBody"></div>
   </div>
 </div>
 
@@ -610,16 +564,28 @@ function selectMobileTab(tab) {
 function switchTab(tab) {
   stopAllSpeech();
   const isQ = tab === "questions";
+  const isO = tab === "oath";
+  const isE = tab === "exam";
+
   document.getElementById("viewQuestions").style.display = isQ ? "block" : "none";
-  document.getElementById("viewOath").style.display = isQ ? "none" : "block";
+  document.getElementById("viewOath").style.display = isO ? "block" : "none";
+  document.getElementById("viewExam").style.display = isE ? "block" : "none";
 
   document.getElementById("tabBtnQuestions").classList.toggle("active", isQ);
-  document.getElementById("tabBtnOath").classList.toggle("active", !isQ);
+  document.getElementById("tabBtnOath").classList.toggle("active", isO);
+  document.getElementById("tabBtnExam").classList.toggle("active", isE);
 
   document.getElementById("mobBtnQuestions").classList.toggle("active", isQ);
-  document.getElementById("mobBtnOath").classList.toggle("active", !isQ);
+  document.getElementById("mobBtnOath").classList.toggle("active", isO);
+  document.getElementById("mobBtnExam").classList.toggle("active", isE);
+
   document.getElementById("mobCheckQuestions").textContent = isQ ? "✔" : "";
-  document.getElementById("mobCheckOath").textContent = !isQ ? "✔" : "";
+  document.getElementById("mobCheckOath").textContent = isO ? "✔" : "";
+  document.getElementById("mobCheckExam").textContent = isE ? "✔" : "";
+
+  if (isE) {
+    renderExamSetup();
+  }
 }
 
 function init() {
@@ -834,9 +800,8 @@ function renderList() {
 
   const pct = Math.round((learnedCount / SORULAR.length) * 100);
   const progressText = `İlerleme: ${learnedCount} / ${SORULAR.length} (%${pct})`;
-  document.getElementById("progressBadge").textContent = progressText;
-  const mobBadge = document.getElementById("mobileProgressBadge");
-  if (mobBadge) mobBadge.textContent = progressText;
+  const badge = document.getElementById("progressBadge");
+  if (badge) badge.textContent = progressText;
 }
 
 function selectQuestion(idx, shouldScroll = true) {
@@ -984,19 +949,8 @@ let examIndex = 0;
 let examResults = [];
 let hintVisible = false;
 
-function openExamModal() {
-  stopAllSpeech();
-  document.getElementById("mobileDropdown").classList.remove("open");
-  document.getElementById("examModal").classList.add("open");
-  renderExamSetup();
-}
-
-function closeExamModal() {
-  stopAllSpeech();
-  document.getElementById("examModal").classList.remove("open");
-}
-
 function renderExamSetup() {
+  stopAllSpeech();
   const cats = ["Tüm Kategoriler (Karışık)", ...new Set(SORULAR.map(s => s[0]))];
   const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
   const isFileProtocol = window.location.protocol === "file:";
@@ -1078,7 +1032,7 @@ function renderExamQuestion() {
       <div id="evalCompare" style="font-size:0.88rem;color:#475569;margin-top:6px;white-space:pre-line;"></div>
     </div>
 
-    <div style="display:flex;justify-content:flex-end;margin-top:auto;">
+    <div style="display:flex;justify-content:flex-end;">
       <button type="button" class="btn btn-navy" onclick="nextExamQuestion()">${examIndex === total - 1 ? "Sınavı Bitir ve Raporu Gör ✔" : "Sonraki Soru ➡"}</button>
     </div>
   `;
@@ -1241,9 +1195,9 @@ function renderExamReport() {
         </tbody>
       </table>
     </div>
-    <div style="display:flex;justify-content:space-between;gap:10px;margin-top:auto;">
+    <div style="display:flex;justify-content:space-between;gap:10px;">
       <button type="button" class="btn btn-blue" onclick="renderExamSetup()">🔄 Yeni Sınav Başlat</button>
-      <button type="button" class="btn btn-gray" onclick="closeExamModal()">Kapat</button>
+      <button type="button" class="btn btn-gray" onclick="switchTab('questions')">💬 Sorulara Dön</button>
     </div>
   `;
 }
