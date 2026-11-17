@@ -164,7 +164,7 @@
 <header>
   <div class="brand">
     <div class="flag"><span></span><span></span><span></span></div>
-    <span>ROMANYA KONSOLOSLUĞU MÜLAKAT & YEMİN ÇALIŞMA ASİSTANI <small style="opacity:.75;font-weight:400;">(v3.3)</small></span>
+    <span>ROMANYA KONSOLOSLUĞU MÜLAKAT & YEMİN ÇALIŞMA ASİSTANI <small style="opacity:.75;font-weight:400;">(v3.4)</small></span>
   </div>
   <div class="header-actions">
     <button type="button" class="btn btn-green" onclick="openExamModal()">🎙️ Mülakat Sınav Modülü</button>
@@ -507,10 +507,10 @@ function stopOathPlayback() {
   if (statusEl) statusEl.textContent = "⏹ Okuma durduruldu.";
 }
 
-async function startOathVoiceTest() {
+function startOathVoiceTest() {
   const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
   if (!SpeechRec) {
-    alert("Bu tarayıcıda ses tanıma desteklenmiyor. Lütfen Google Chrome veya Microsoft Edge kullanın.");
+    alert("Bu tarayıcıda ses tanıma desteklenmiyor. Lütfen Google Chrome veya Safari kullanın.");
     return;
   }
   stopAllSpeech();
@@ -519,17 +519,6 @@ async function startOathVoiceTest() {
   const micStatus = document.getElementById("oathMicStatus");
   const boxEl = document.getElementById("oathTranscriptBox");
   const resEl = document.getElementById("oathEvalResult");
-
-  if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      stream.getTracks().forEach(t => t.stop());
-    } catch (err) {
-      micStatus.textContent = "Mikrofon izni reddedildi. Adres çubuğundan mikrofona izin verin.";
-      micStatus.style.color = "#DC2626";
-      return;
-    }
-  }
 
   const rec = new SpeechRec();
   rec.lang = "ro-RO";
@@ -558,7 +547,14 @@ async function startOathVoiceTest() {
   };
 
   rec.onerror = (e) => {
-    micStatus.textContent = "Mikrofon hatası: " + e.error;
+    const mesajlar = {
+      "not-allowed": "Mikrofon izni kapalı. Adres çubuğunun solundaki ayar simgesinden Mikrofon iznini açın veya linki Chrome/Safari'de açın.",
+      "service-not-allowed": "Konuşma servisi engellendi. WhatsApp içi tarayıcı yerine Chrome veya Safari kullanın.",
+      "no-speech": "Ses duyulmadı. Mikrofona yaklaşıp tekrar deneyin.",
+      "audio-capture": "Cihazda aktif mikrofon bulunamadı.",
+      "network": "İnternet bağlantısı hatası."
+    };
+    micStatus.textContent = mesajlar[e.error] || ("Mikrofon hatası: " + e.error);
     micStatus.style.color = "#DC2626";
   };
 
@@ -578,7 +574,13 @@ async function startOathVoiceTest() {
     }
   };
 
-  rec.start();
+  try {
+    rec.start();
+  } catch (err) {
+    micBtn.disabled = false;
+    micBtn.textContent = "🎙️ Yemini Sesli Oku (Başlat)";
+    micStatus.textContent = "Başlatılamadı: " + err.message;
+  }
 }
 
 /* --- SORU LİSTESİ VE DETAY PANELİ --- */
@@ -761,7 +763,7 @@ function renderExamSetup() {
 
   let micNote = "";
   if (!SpeechRec) {
-    micNote = `<div style="background:#FEF3C7;color:#92400E;padding:10px;border-radius:6px;font-size:0.88rem;font-weight:600;">⚠ Bu tarayıcıda sesli tanıma desteklenmiyor (Chrome veya Edge önerilir). Yazarak test edebilirsiniz.</div>`;
+    micNote = `<div style="background:#FEF3C7;color:#92400E;padding:10px;border-radius:6px;font-size:0.88rem;font-weight:600;">⚠ Bu tarayıcıda sesli tanıma desteklenmiyor (Chrome veya Safari önerilir). Yazarak test edebilirsiniz.</div>`;
   } else if (isFileProtocol) {
     micNote = `<div style="background:#FEF3C7;color:#92400E;padding:10px;border-radius:6px;font-size:0.88rem;font-weight:600;">⚠ Dosya doğrudan (file://) açıldığı için tarayıcı mikrofonu kısıtlayabilir. Mikrofon çalışmazsa dosyayı yerel sunucu (localhost) veya GitHub Pages (HTTPS) linki üzerinden açın.</div>`;
   } else {
@@ -862,10 +864,10 @@ function toggleHint() {
   }
 }
 
-async function startVoiceAnswer() {
+function startVoiceAnswer() {
   const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
   if (!SpeechRec) {
-    alert("Bu tarayıcıda ses tanıma desteklenmiyor. Lütfen Google Chrome veya Microsoft Edge kullanın ya da cevabınızı kutuya yazıp Enter'a basın.");
+    alert("Bu tarayıcıda ses tanıma desteklenmiyor. Lütfen Google Chrome veya Safari kullanın ya da cevabınızı kutuya yazıp Enter'a basın.");
     return;
   }
   stopAllSpeech();
@@ -873,17 +875,6 @@ async function startVoiceAnswer() {
   const micBtn = document.getElementById("micBtn");
   const micStatus = document.getElementById("micStatus");
   const inputEl = document.getElementById("examAnswerInput");
-
-  if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      stream.getTracks().forEach(track => track.stop());
-    } catch (err) {
-      micStatus.textContent = "Mikrofon izni reddedildi veya yerel dosya (file://) engeli var. Adres çubuğundan izin verin veya localhost/HTTPS üzerinden açın.";
-      micStatus.style.color = "#DC2626";
-      return;
-    }
-  }
 
   const rec = new SpeechRec();
   rec.lang = "ro-RO";
@@ -915,13 +906,13 @@ async function startVoiceAnswer() {
 
   rec.onerror = (e) => {
     const mesajlar = {
-      "not-allowed": "Mikrofon izni engellendi. Dosya doğrudan (file://) açıldıysa Chrome/Edge yerel dosyada mikrofona izin vermez.",
-      "service-not-allowed": "Konuşma servisi engellendi (HTTPS veya localhost üzerinden açmanız gerekir).",
+      "not-allowed": "Mikrofon izni kapalı. Adres çubuğunun solundaki ayar simgesinden Mikrofon iznini açın veya linki Chrome/Safari'de açın.",
+      "service-not-allowed": "Konuşma servisi engellendi. WhatsApp içi tarayıcı yerine Chrome veya Safari kullanın.",
       "no-speech": "Ses duyulmadı. Mikrofona biraz daha yakın konuşup tekrar deneyin.",
-      "audio-capture": "Bilgisayarda veya telefonda aktif bir mikrofon bulunamadı.",
-      "network": "İnternet bağlantısı hatası (Google ses tanıma için internet gerekir)."
+      "audio-capture": "Cihazda aktif mikrofon bulunamadı.",
+      "network": "İnternet bağlantısı hatası."
     };
-    micStatus.textContent = mesajlar[e.error] || ("Hata: " + e.error);
+    micStatus.textContent = mesajlar[e.error] || ("Mikrofon hatası: " + e.error);
     micStatus.style.color = "#DC2626";
   };
 
