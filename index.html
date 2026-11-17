@@ -399,18 +399,18 @@ function speakFallbackBrowser(text, token) {
   });
 }
 
+// Kendi oluşturduğunuz Cloudflare Worker adresini buraya yazın (sonunda / olmasın)
+const WORKER_URL = "https://romence-tts.aytekint68.workers.dev";
+
 function speakPart(text, token) {
   return new Promise(resolve => {
     if (token !== speakToken) return resolve();
 
     const isLocalhost = ["localhost", "127.0.0.1"].includes(window.location.hostname);
-    // GitHub Pages veya file:// üzerinde doğrudan güvenilir tarayıcı sentezini kullan
-    if (!isLocalhost) {
-      speakFallbackBrowser(text, token).then(resolve);
-      return;
-    }
+    const url = isLocalhost
+      ? `/tts?q=${encodeURIComponent(text)}`
+      : `${WORKER_URL}/?q=${encodeURIComponent(text)}`;
 
-    const url = `/tts?q=${encodeURIComponent(text)}`;
     const audio = new Audio(url);
     currentAudio = audio;
 
