@@ -403,7 +403,7 @@ function speakFallbackBrowser(text, token) {
 }
 
 function speakPart(text, token) {
-  return new Promise(resolve => {
+  return new Promise(async resolve => {
     if (token !== speakToken) return resolve();
 
     const isLocalhost = ["localhost", "127.0.0.1"].includes(window.location.hostname);
@@ -412,35 +412,39 @@ function speakPart(text, token) {
       ? `/tts?q=${encodeURIComponent(text)}`
       : `${temizBaseUrl}/?q=${encodeURIComponent(text)}`;
 
-    const audio = new Audio(url);
-    currentAudio = audio;
+    try {
+      const resp = await fetch(url);
+      if (!resp.ok) throw new Error("HTTP " + resp.status);
+      const blob = await resp.blob();
+      if (token !== speakToken) return resolve();
 
-    let finished = false;
-    let fallbackTriggered = false;
+      const blobUrl = URL.createObjectURL(blob);
+      const audio = new Audio(blobUrl);
+      currentAudio = audio;
 
-    const done = () => {
-      if (finished) return;
-      finished = true;
-      if (currentAudio === audio) currentAudio = null;
-      resolve();
-    };
+      let finished = false;
+      const done = () => {
+        if (finished) return;
+        finished = true;
+        URL.revokeObjectURL(blobUrl);
+        if (currentAudio === audio) currentAudio = null;
+        resolve();
+      };
 
-    const runFallback = async () => {
-      if (fallbackTriggered || finished || token !== speakToken) return done();
-      fallbackTriggered = true;
-      console.warn("Worker sesi çalınamadı, yedek sese geçildi:", url);
-      audio.onended = null;
-      audio.onerror = null;
+      audio.onended = done;
+      audio.onerror = async () => {
+        URL.revokeObjectURL(blobUrl);
+        await speakFallbackBrowser(text, token);
+        done();
+      };
+
+      await audio.play();
+    } catch (err) {
+      console.warn("Worker ses hatası:", err);
+      const bar = document.getElementById("statusBar");
+      if (bar) bar.textContent = "⚠ Worker hatası (" + err.message + "), yedek ses kullanılıyor.";
       await speakFallbackBrowser(text, token);
-      done();
-    };
-
-    audio.onended = done;
-    audio.onerror = runFallback;
-
-    const playPromise = audio.play();
-    if (playPromise !== undefined) {
-      playPromise.catch(runFallback);
+      resolve();
     }
   });
 }
