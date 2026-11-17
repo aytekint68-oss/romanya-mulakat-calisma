@@ -132,7 +132,7 @@
 <header>
   <div class="brand">
     <div class="flag"><span></span><span></span><span></span></div>
-    <span>ROMANYA KONSOLOSLUĞU MÜLAKAT & YEMİN ÇALIŞMA ASİSTANI <small style="opacity:.75;font-weight:400;">(v2.2)</small></span>
+    <span>ROMANYA KONSOLOSLUĞU MÜLAKAT & YEMİN ÇALIŞMA ASİSTANI <small style="opacity:.75;font-weight:400;">(v3.0)</small></span>
   </div>
   <div class="header-actions">
     <button type="button" class="btn btn-green" onclick="openExamModal()">🎙️ Mülakat Sınav Modülü</button>
@@ -204,6 +204,9 @@
 </div>
 
 <script>
+// ⚠️ KENDİ CLOUDFLARE WORKER ADRESİNİZİ AŞAĞIYA YAPIŞTIRIN (sonunda / olmasın)
+const WORKER_URL = "https://romence-tts.aytekint68.workers.dev";
+
 const SORULAR = [
   ["1. Tanışma ve Kişisel Bilgiler", "Cum vă cheamă?", "Adınız nedir? (Resmi)", "Mă cheamă [Adınız Soyadınız].", "Adım [Adınız Soyadınız]."],
   ["1. Tanışma ve Kişisel Bilgiler", "Cum vă numiți?", "İsminiz nedir? (Resmi)", "Mă numesc [Adınız Soyadınız].", "İsmim [Adınız Soyadınız]."],
@@ -399,17 +402,15 @@ function speakFallbackBrowser(text, token) {
   });
 }
 
-// Kendi oluşturduğunuz Cloudflare Worker adresini buraya yazın (sonunda / olmasın)
-const WORKER_URL = "https://romence-tts.aytekint68.workers.dev";
-
 function speakPart(text, token) {
   return new Promise(resolve => {
     if (token !== speakToken) return resolve();
 
     const isLocalhost = ["localhost", "127.0.0.1"].includes(window.location.hostname);
+    const temizBaseUrl = WORKER_URL.replace(/\/+$/, "");
     const url = isLocalhost
       ? `/tts?q=${encodeURIComponent(text)}`
-      : `${WORKER_URL}/?q=${encodeURIComponent(text)}`;
+      : `${temizBaseUrl}/?q=${encodeURIComponent(text)}`;
 
     const audio = new Audio(url);
     currentAudio = audio;
@@ -427,6 +428,7 @@ function speakPart(text, token) {
     const runFallback = async () => {
       if (fallbackTriggered || finished || token !== speakToken) return done();
       fallbackTriggered = true;
+      console.warn("Worker sesi çalınamadı, yedek sese geçildi:", url);
       audio.onended = null;
       audio.onerror = null;
       await speakFallbackBrowser(text, token);
