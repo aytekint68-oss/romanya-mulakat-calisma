@@ -26,12 +26,31 @@
   body { margin: 0; background: var(--bg); color: var(--text); }
 
   header {
-    background: var(--navy); color: #fff; padding: 14px 20px;
-    display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px;
+    background: var(--navy); color: #fff; padding: 12px 16px;
+    display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px;
+    position: relative;
   }
-  .brand { display: flex; align-items: center; gap: 12px; font-weight: 700; font-size: 1.05rem; }
+  .header-left {
+    display: flex; align-items: center; gap: 10px;
+  }
+  .hamburger-btn {
+    display: none;
+    background: rgba(255, 255, 255, 0.14);
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    color: #fff;
+    border-radius: 6px;
+    padding: 6px 10px;
+    font-size: 1.25rem;
+    line-height: 1;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+  .hamburger-btn:active {
+    background: rgba(255, 255, 255, 0.28);
+  }
+  .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 1rem; }
   .flag {
-    display: inline-flex; width: 34px; height: 22px; border: 1px solid #fff; flex-shrink: 0;
+    display: inline-flex; width: 32px; height: 20px; border: 1px solid #fff; flex-shrink: 0;
   }
   .flag span:nth-child(1) { flex: 1; background: #002B7F; }
   .flag span:nth-child(2) { flex: 1; background: #FCD116; }
@@ -39,7 +58,7 @@
 
   .header-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
   .badge-progress {
-    background: var(--slate); padding: 6px 12px; border-radius: 6px; font-size: 0.9rem; font-weight: 600;
+    background: var(--slate); padding: 6px 12px; border-radius: 6px; font-size: 0.88rem; font-weight: 600;
   }
   .btn {
     border: none; border-radius: 6px; padding: 8px 14px; font-weight: 600; cursor: pointer;
@@ -56,7 +75,7 @@
   .btn-navy { background: var(--navy); }
   .btn-sm { padding: 6px 10px; font-size: 0.82rem; }
 
-  /* Üst Sekme Çubuğu */
+  /* Masaüstü Sekme Çubuğu */
   .nav-tabs {
     background: #162C49; padding: 8px 20px 0; display: flex; gap: 8px; flex-wrap: wrap;
   }
@@ -67,6 +86,38 @@
   }
   .tab-btn.active {
     background: var(--bg); color: var(--navy);
+  }
+
+  /* Mobil Aşağı Açılan Menü */
+  .mobile-dropdown {
+    display: none;
+    flex-direction: column;
+    background: #162C49;
+    border-top: 1px solid rgba(255, 255, 255, 0.15);
+    padding: 8px 14px;
+    gap: 6px;
+  }
+  .mobile-dropdown.open {
+    display: flex;
+  }
+  .mobile-menu-item {
+    background: rgba(255, 255, 255, 0.08);
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 6px;
+    padding: 11px 14px;
+    text-align: left;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .mobile-menu-item.active {
+    background: #DBEAFE;
+    color: var(--navy);
+    border-color: #93C5FD;
   }
 
   .filters {
@@ -85,6 +136,9 @@
   .detail-panel { order: 2; }
 
   @media (max-width: 860px) {
+    .hamburger-btn { display: inline-flex; align-items: center; justify-content: center; }
+    .nav-tabs { display: none; }
+    .brand { font-size: 0.92rem; }
     .container { grid-template-columns: 1fr; }
     .detail-panel { order: 1; border: 2px solid var(--blue); }
     .list-panel { order: 2; }
@@ -175,9 +229,12 @@
 <body>
 
 <header>
-  <div class="brand">
-    <div class="flag"><span></span><span></span><span></span></div>
-    <span>ROMANYA KONSOLOSLUĞU MÜLAKAT & YEMİN ÇALIŞMA ASİSTANI <small style="opacity:.75;font-weight:400;">(v3.5)</small></span>
+  <div class="header-left">
+    <button type="button" class="hamburger-btn" id="hamburgerBtn" aria-label="Menüyü Aç/Kapat" onclick="toggleMobileMenu()">☰</button>
+    <div class="brand">
+      <div class="flag"><span></span><span></span><span></span></div>
+      <span>ROMANYA KONSOLOSLUĞU MÜLAKAT & YEMİN <small style="opacity:.75;font-weight:400;">(v3.6)</small></span>
+    </div>
   </div>
   <div class="header-actions">
     <button type="button" class="btn btn-green" onclick="openExamModal()">🎙️ Mülakat Sınav Modülü</button>
@@ -185,12 +242,25 @@
   </div>
 </header>
 
+<!-- Mobil Aşağı Açılan Menü -->
+<div class="mobile-dropdown" id="mobileDropdown">
+  <button type="button" class="mobile-menu-item active" id="mobBtnQuestions" onclick="selectMobileTab('questions')">
+    <span>💬 Mülakat Soruları (74)</span>
+    <span id="mobCheckQuestions">✔</span>
+  </button>
+  <button type="button" class="mobile-menu-item" id="mobBtnOath" onclick="selectMobileTab('oath')">
+    <span>📜 Yemin Metni Ezber</span>
+    <span id="mobCheckOath"></span>
+  </button>
+</div>
+
+<!-- Masaüstü Sekme Çubuğu -->
 <div class="nav-tabs">
   <button type="button" class="tab-btn active" id="tabBtnQuestions" onclick="switchTab('questions')">💬 Mülakat Soruları (74)</button>
   <button type="button" class="tab-btn" id="tabBtnOath" onclick="switchTab('oath')">📜 Yemin Metni Ezber (Jurământul)</button>
 </div>
 
-<!-- SEKME 1: MÜLAKAT SORULARI -->
+<!-- SEKME 1: MÜLAKAT SORULARI (Varsayılan Açık) -->
 <div id="viewQuestions">
   <div class="filters">
     <select id="catFilter" onchange="renderList()"></select>
@@ -433,13 +503,29 @@ function stopAllSpeech() {
   document.querySelectorAll(".oath-line-card").forEach(c => c.classList.remove("speaking"));
 }
 
+function toggleMobileMenu() {
+  const menu = document.getElementById("mobileDropdown");
+  menu.classList.toggle("open");
+}
+
+function selectMobileTab(tab) {
+  switchTab(tab);
+  document.getElementById("mobileDropdown").classList.remove("open");
+}
+
 function switchTab(tab) {
   stopAllSpeech();
   const isQ = tab === "questions";
   document.getElementById("viewQuestions").style.display = isQ ? "block" : "none";
   document.getElementById("viewOath").style.display = isQ ? "none" : "block";
+
   document.getElementById("tabBtnQuestions").classList.toggle("active", isQ);
   document.getElementById("tabBtnOath").classList.toggle("active", !isQ);
+
+  document.getElementById("mobBtnQuestions").classList.toggle("active", isQ);
+  document.getElementById("mobBtnOath").classList.toggle("active", !isQ);
+  document.getElementById("mobCheckQuestions").textContent = isQ ? "✔" : "";
+  document.getElementById("mobCheckOath").textContent = !isQ ? "✔" : "";
 }
 
 function init() {
@@ -450,6 +536,7 @@ function init() {
     opt.value = c; opt.textContent = c;
     catSelect.appendChild(opt);
   });
+  switchTab("questions");
   renderList();
   selectQuestion(0, false);
   renderOathSection();
@@ -796,6 +883,7 @@ let hintVisible = false;
 
 function openExamModal() {
   stopAllSpeech();
+  document.getElementById("mobileDropdown").classList.remove("open");
   document.getElementById("examModal").classList.add("open");
   renderExamSetup();
 }
