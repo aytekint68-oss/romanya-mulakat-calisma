@@ -296,6 +296,8 @@ let currentAudio = null;
 function stopAllSpeech() {
   speakToken++;
   if (currentAudio) {
+    currentAudio.onended = null;
+    currentAudio.onerror = null;
     currentAudio.pause();
     currentAudio = null;
   }
@@ -371,6 +373,7 @@ function setStatus(newStatus) {
 function speakFallbackBrowser(text, token) {
   return new Promise(resolve => {
     if (token !== speakToken || !("speechSynthesis" in window)) return resolve();
+    speechSynthesis.cancel();
     const u = new SpeechSynthesisUtterance(text);
     u.lang = "ro-RO";
     u.rate = 0.95;
@@ -387,12 +390,19 @@ function speakFallbackBrowser(text, token) {
 function speakPart(text, token) {
   return new Promise(resolve => {
     if (token !== speakToken) return resolve();
-    const url = `https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=ro&q=${encodeURIComponent(text)}`;
+
+    const isLocalhost = ["localhost", "127.0.0.1"].includes(window.location.hostname);
+    const url = isLocalhost
+      ? `/tts?q=${encodeURIComponent(text)}`
+      : `https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=ro&q=${encodeURIComponent(text)}`;
+
     const audio = new Audio(url);
     audio.referrerPolicy = "no-referrer";
     currentAudio = audio;
 
     let finished = false;
+    let fallbackTriggered = false;
+
     const done = () => {
       if (finished) return;
       finished = true;
@@ -400,18 +410,21 @@ function speakPart(text, token) {
       resolve();
     };
 
-    audio.onended = done;
-    audio.onerror = async () => {
+    const runFallback = async () => {
+      if (fallbackTriggered || finished || token !== speakToken) return done();
+      fallbackTriggered = true;
+      audio.onended = null;
+      audio.onerror = null;
       await speakFallbackBrowser(text, token);
       done();
     };
 
+    audio.onended = done;
+    audio.onerror = runFallback;
+
     const playPromise = audio.play();
     if (playPromise !== undefined) {
-      playPromise.catch(async () => {
-        await speakFallbackBrowser(text, token);
-        done();
-      });
+      playPromise.catch(runFallback);
     }
   });
 }
