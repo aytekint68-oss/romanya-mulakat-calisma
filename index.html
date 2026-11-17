@@ -23,7 +23,7 @@
     --red: #DC2626;
   }
   * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-  body { margin: 0; background: var(--bg); color: var(--text); }
+  body { margin: 0; background: var(--bg); color: var(--text); overflow-x: hidden; }
 
   header {
     background: var(--navy); color: #fff; padding: 12px 16px;
@@ -48,8 +48,11 @@
   .hamburger-btn:active {
     background: rgba(255, 255, 255, 0.28);
   }
-  .brand { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 0.98rem; min-width: 0; }
-  .brand-title { white-space: nowrap; }
+  .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 0.98rem; min-width: 0; }
+  .brand-title {
+    display: flex; align-items: center; flex-wrap: wrap; gap: 5px; line-height: 1.25;
+  }
+  .brand-sep { opacity: 0.85; }
   .flag {
     display: inline-flex; width: 30px; height: 18px; border: 1px solid #fff; flex-shrink: 0;
   }
@@ -155,39 +158,6 @@
   .list-panel { order: 1; }
   .detail-panel { order: 2; }
 
-  @media (max-width: 860px) {
-    header { padding: 9px 10px; gap: 6px; }
-    .header-left { gap: 6px; }
-    .hamburger-btn { display: inline-flex; align-items: center; justify-content: center; padding: 4px 7px; font-size: 1rem; }
-    .nav-tabs { display: none; }
-    .header-actions { display: none; }
-    .mobile-progress-box { display: block; }
-
-    .brand { gap: 5px; }
-    .flag { width: 20px; height: 13px; }
-    .brand-title {
-      font-size: clamp(0.60rem, 2.55vw, 0.84rem);
-      letter-spacing: -0.2px;
-      white-space: nowrap;
-    }
-
-    /* Mobilde filtrelerin tek satırda yan yana sığması */
-    .filters { padding: 8px 10px; gap: 5px; flex-wrap: nowrap; }
-    .filters select, .filters input {
-      flex: 1 1 0;
-      min-width: 0;
-      width: 100%;
-      padding: 7px 6px;
-      font-size: 0.78rem;
-      text-overflow: ellipsis;
-    }
-
-    .container { grid-template-columns: 1fr; margin-top: 12px; padding: 0 12px; }
-    .detail-panel { order: 1; border: 2px solid var(--blue); }
-    .list-panel { order: 2; }
-    .list-wrapper { max-height: 44vh; }
-  }
-
   .oath-container {
     max-width: 1000px; margin: 18px auto; padding: 0 16px; display: flex; flex-direction: column; gap: 16px;
   }
@@ -233,7 +203,7 @@
   }
   .cat-tag {
     display: inline-block; background: #EBF4FF; color: var(--navy); font-weight: 700;
-    font-size: 0.82rem; padding: 4px 10px; border-radius: 5px;
+    font-size: 0.82rem; padding: 4px 10px; border-radius: 5px; max-width: 100%; word-break: break-word;
   }
   .nav-arrows { display: flex; gap: 6px; }
   .section-label { font-size: 0.78rem; font-weight: 700; color: var(--muted); letter-spacing: .5px; }
@@ -249,6 +219,7 @@
   .modal-backdrop {
     position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6);
     display: none; align-items: center; justify-content: center; padding: 16px; z-index: 100;
+    overflow: hidden;
   }
   .modal-backdrop.open { display: flex; }
   .modal {
@@ -257,16 +228,85 @@
   }
   .modal-header {
     background: var(--navy); color: #fff; padding: 14px 18px;
-    display: flex; justify-content: space-between; align-items: center; font-weight: 700;
+    display: flex; justify-content: space-between; align-items: center; gap: 10px;
+    font-weight: 700; flex-shrink: 0;
   }
-  .modal-body { padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 14px; }
-  .box { background: #F8FAFC; border: 1px solid var(--border); border-radius: 8px; padding: 14px; }
+  .modal-header span {
+    min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .modal-body {
+    padding: 20px; overflow-y: auto; overflow-x: hidden;
+    display: flex; flex-direction: column; gap: 14px; flex: 1; min-width: 0;
+  }
+  .box {
+    background: #F8FAFC; border: 1px solid var(--border); border-radius: 8px; padding: 14px;
+    width: 100%; max-width: 100%; min-width: 0; word-wrap: break-word; overflow-wrap: break-word;
+  }
+  .exam-select {
+    width: 100%; max-width: 100%; padding: 9px 10px; margin-top: 4px;
+    border-radius: 6px; border: 1px solid #CBD5E1; font-size: 0.95rem; background: #fff;
+  }
   .exam-input {
-    width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 1rem; margin-top: 8px;
+    width: 100%; max-width: 100%; padding: 10px; border: 1px solid var(--border);
+    border-radius: 6px; font-size: 1rem; margin-top: 8px;
   }
-  table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
-  th, td { border: 1px solid #E2E8F0; padding: 8px; text-align: left; }
+  .report-table-wrap {
+    width: 100%; max-width: 100%; overflow-x: auto; flex: 1; min-height: 160px;
+  }
+  table { width: 100%; border-collapse: collapse; font-size: 0.86rem; }
+  th, td { border: 1px solid #E2E8F0; padding: 7px 8px; text-align: left; word-break: break-word; }
   th { background: #F1F5F9; }
+
+  @media (max-width: 860px) {
+    header { padding: 10px 12px; gap: 8px; }
+    .header-left { gap: 9px; }
+    .hamburger-btn { display: inline-flex; align-items: center; justify-content: center; padding: 6px 9px; font-size: 1.15rem; }
+    .nav-tabs { display: none; }
+    .header-actions { display: none; }
+    .mobile-progress-box { display: block; }
+
+    .brand { gap: 8px; }
+    .flag { width: 26px; height: 17px; }
+    .brand-title {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 2px;
+      line-height: 1.2;
+    }
+    .brand-sep { display: none; }
+    .brand-main { font-size: 0.86rem; font-weight: 800; letter-spacing: 0.2px; }
+    .brand-sub { font-size: 0.75rem; font-weight: 600; color: #E2E8F0; }
+
+    /* Mobilde filtrelerin tek satırda yan yana sığması */
+    .filters { padding: 8px 10px; gap: 5px; flex-wrap: nowrap; }
+    .filters select, .filters input {
+      flex: 1 1 0;
+      min-width: 0;
+      width: 100%;
+      padding: 7px 6px;
+      font-size: 0.78rem;
+      text-overflow: ellipsis;
+    }
+
+    .container { grid-template-columns: 1fr; margin-top: 12px; padding: 0 12px; }
+    .detail-panel { order: 1; border: 2px solid var(--blue); }
+    .list-panel { order: 2; }
+    .list-wrapper { max-height: 44vh; }
+
+    /* Mobilde Mülakat Sınav Modülünün ekranı yatay ve dikey tam kaplaması */
+    .modal-backdrop { padding: 0; }
+    .modal {
+      width: 100vw;
+      max-width: 100vw;
+      height: 100vh;
+      height: 100dvh;
+      max-height: 100dvh;
+      border-radius: 0;
+    }
+    .modal-header { padding: 12px 14px; font-size: 0.94rem; }
+    .modal-body { padding: 14px; gap: 12px; }
+    .box { padding: 12px; }
+  }
 </style>
 </head>
 <body>
@@ -276,7 +316,11 @@
     <button type="button" class="hamburger-btn" id="hamburgerBtn" aria-label="Menüyü Aç/Kapat" onclick="toggleMobileMenu()">☰</button>
     <div class="brand">
       <div class="flag"><span></span><span></span><span></span></div>
-      <span class="brand-title">ROMANYA KONSOLOSLUĞU - RUMENCE MÜLAKAT VE YEMİN ASİSTANI <small style="opacity:.75;font-weight:400;">(v3.9)</small></span>
+      <div class="brand-title">
+        <span class="brand-main">ROMANYA KONSOLOSLUĞU</span>
+        <span class="brand-sep">-</span>
+        <span class="brand-sub">RUMENCE MÜLAKAT VE YEMİN ASİSTANI <small style="opacity:.75;font-weight:400;">(v3.11)</small></span>
+      </div>
     </div>
   </div>
   <div class="header-actions">
@@ -418,7 +462,7 @@
   <div class="modal">
     <div class="modal-header">
       <span id="examHeaderTitle">🎙️ SESLİ MÜLAKAT SINAV MODÜLÜ</span>
-      <button type="button" class="btn btn-red" style="padding:4px 10px;" onclick="closeExamModal()">✕</button>
+      <button type="button" class="btn btn-red" style="padding:4px 10px;flex-shrink:0;" onclick="closeExamModal()">✕</button>
     </div>
     <div class="modal-body" id="examBody"></div>
   </div>
@@ -972,13 +1016,13 @@ function renderExamSetup() {
     <div style="color:#475569;font-size:0.92rem;">Konsolosluk görevlisi soruları Rumence sesli sorar. Siz de mikrofonunuza Rumence cevap verirsiniz.</div>
     <div>
       <label style="font-weight:600;font-size:0.9rem;">Kategori:</label><br>
-      <select id="examCat" style="width:100%;padding:8px;margin-top:4px;border-radius:6px;border:1px solid #CBD5E1;">
+      <select id="examCat" class="exam-select">
         ${cats.map(c => `<option value="${c}">${c}</option>`).join("")}
       </select>
     </div>
     <div>
       <label style="font-weight:600;font-size:0.9rem;">Soru Sayısı:</label><br>
-      <select id="examLimit" style="width:100%;padding:8px;margin-top:4px;border-radius:6px;border:1px solid #CBD5E1;">
+      <select id="examLimit" class="exam-select">
         <option value="5">5 Soru (Hızlı Prova)</option>
         <option value="10" selected>10 Soru (Standart Mülakat)</option>
         <option value="20">20 Soru (Kapsamlı Test)</option>
@@ -1034,7 +1078,7 @@ function renderExamQuestion() {
       <div id="evalCompare" style="font-size:0.88rem;color:#475569;margin-top:6px;white-space:pre-line;"></div>
     </div>
 
-    <div style="display:flex;justify-content:flex-end;">
+    <div style="display:flex;justify-content:flex-end;margin-top:auto;">
       <button type="button" class="btn btn-navy" onclick="nextExamQuestion()">${examIndex === total - 1 ? "Sınavı Bitir ve Raporu Gör ✔" : "Sonraki Soru ➡"}</button>
     </div>
   `;
@@ -1187,9 +1231,9 @@ function renderExamReport() {
   const avg = (examResults.reduce((a, b) => a + b.skor, 0) / examResults.length).toFixed(1);
   document.getElementById("examHeaderTitle").textContent = "📊 MÜLAKAT SINAV SONUÇ RAPORU";
   document.getElementById("examBody").innerHTML = `
-    <div style="font-size:1.25rem;font-weight:700;color:#1E3A5F;">Genel Başarı Ortalaması: %${avg} (${examResults.length} Soru)</div>
-    <div style="color:#475569;font-size:0.92rem;">${avg >= 75 ? "Tebrikler! Konsolosluk mülakatına hazırsınız." : "İyi gidiyorsunuz, düşük puanlı soruları tekrar çalışmanız faydalı olacaktır."}</div>
-    <div style="max-height:320px;overflow-y:auto;">
+    <div style="font-size:1.15rem;font-weight:700;color:#1E3A5F;">Genel Başarı Ortalaması: %${avg} (${examResults.length} Soru)</div>
+    <div style="color:#475569;font-size:0.9rem;">${avg >= 75 ? "Tebrikler! Konsolosluk mülakatına hazırsınız." : "İyi gidiyorsunuz, düşük puanlı soruları tekrar çalışmanız faydalı olacaktır."}</div>
+    <div class="report-table-wrap">
       <table>
         <thead><tr><th>No</th><th>Soru</th><th>Sizin Cevabınız</th><th>Puan</th></tr></thead>
         <tbody>
@@ -1197,7 +1241,7 @@ function renderExamReport() {
         </tbody>
       </table>
     </div>
-    <div style="display:flex;justify-content:space-between;">
+    <div style="display:flex;justify-content:space-between;gap:10px;margin-top:auto;">
       <button type="button" class="btn btn-blue" onclick="renderExamSetup()">🔄 Yeni Sınav Başlat</button>
       <button type="button" class="btn btn-gray" onclick="closeExamModal()">Kapat</button>
     </div>
