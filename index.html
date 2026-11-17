@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Romanya Konsolosluğu – Rumence Mülakat & Yemin Çalışma Asistanı</title>
+<style>
+  :root {
+    --navy: #1E3A5F;
+    --slate: #2C5282;
+    --bg: #F1F5F9;
+    --card: #FFFFFF;
+    --text: #0F172A;
+    --muted: #64748B;
+    --border: #CBD5E1;
+    --blue: #2563EB;
+    --teal: #0D9488;
+    --green: #16A34A;
+    --amber: #D97706;
+    --red: #DC2626;
+  }
+  * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+  body { margin: 0; background: var(--bg); color: var(--text); }
+
+  header {
+    background: var(--navy); color: #fff; padding: 14px 20px;
+    display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px;
+  }
+  .brand { display: flex; align-items: center; gap: 12px; font-weight: 700; font-size: 1.05rem; }
+  .flag {
+    display: inline-flex; width: 34px; height: 22px; border: 1px solid #fff; flex-shrink: 0;
+  }
+  .flag span:nth-child(1) { flex: 1; background: #002B7F; }
+  .flag span:nth-child(2) { flex: 1; background: #FCD116; }
+  .flag span:nth-child(3) { flex: 1; background: #CE1126; }
+
+  .header-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .badge-progress {
+    background: var(--slate); padding: 6px 12px; border-radius: 6px; font-size: 0.9rem; font-weight: 600;
+  }
+  .btn {
+    border: none; border-radius: 6px; padding: 8px 14px; font-weight: 600; cursor: pointer;
+    font-size: 0.9rem; color: #fff; display: inline-flex; align-items: center; gap: 6px; transition: opacity .15s;
+  }
+  .btn:hover { opacity: 0.9; }
+  .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .btn-green { background: var(--green); }
+  .btn-blue { background: var(--blue); }
+  .btn-teal { background: var(--teal); }
+  .btn-amber { background: var(--amber); }
+  .btn-gray { background: var(--muted); }
+  .btn-red { background: var(--red); }
+  .btn-navy { background: var(--navy); }
+
+  .filters {
+    background: #E2E8F0; padding: 12px 20px; display: flex; flex-wrap: wrap; gap: 10px; align-items: center;
+  }
+  .filters select, .filters input {
+    padding: 8px 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 0.92rem; background: #fff;
+  }
+  .filters input { flex: 1; min-width: 180px; }
+
+  .container {
+    max-width: 1250px; margin: 16px auto; padding: 0 16px;
+    display: grid; grid-template-columns: 1.2fr 1fr; gap: 16px;
+  }
+  @media (max-width: 860px) { .container { grid-template-columns: 1fr; } }
+
+  .panel {
+    background: var(--card); border: 1px solid var(--border); border-radius: 8px; overflow: hidden;
+  }
+
+  .list-wrapper { max-height: 74vh; overflow-y: auto; }
+  .q-item {
+    padding: 12px 14px; border-bottom: 1px solid #E2E8F0; cursor: pointer;
+    display: flex; justify-content: space-between; align-items: center; gap: 10px;
+  }
+  .q-item:hover { background: #F8FAFC; }
+  .q-item.active { background: #DBEAFE; }
+  .q-meta { font-size: 0.78rem; color: var(--muted); margin-bottom: 3px; }
+  .q-title { font-weight: 600; font-size: 0.96rem; }
+  .status-pill {
+    font-size: 0.76rem; font-weight: 700; padding: 4px 8px; border-radius: 999px; white-space: nowrap;
+  }
+  .st-calisilacak { background: #E2E8F0; color: #334155; }
+  .st-tekrar { background: #FEF3C7; color: #92400E; }
+  .st-ogrenildi { background: #DCFCE7; color: #166534; }
+
+  .detail-panel { padding: 20px; display: flex; flex-direction: column; gap: 14px; }
+  .cat-tag {
+    display: inline-block; background: #EBF4FF; color: var(--navy); font-weight: 700;
+    font-size: 0.82rem; padding: 4px 10px; border-radius: 5px; align-self: flex-start;
+  }
+  .section-label { font-size: 0.78rem; font-weight: 700; color: var(--muted); letter-spacing: .5px; }
+  .ro-text { font-size: 1.15rem; font-weight: 700; margin: 4px 0; }
+  .tr-text { font-size: 0.95rem; font-style: italic; color: #475569; margin-bottom: 8px; }
+  .divider { border: 0; border-top: 1px solid #E2E8F0; margin: 4px 0; }
+  .status-buttons { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .status-bar {
+    background: #F8FAFC; border: 1px solid #E2E8F0; padding: 10px 12px; border-radius: 6px;
+    font-size: 0.86rem; color: #334155; margin-top: auto;
+  }
+
+  .modal-backdrop {
+    position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6);
+    display: none; align-items: center; justify-content: center; padding: 16px; z-index: 100;
+  }
+  .modal-backdrop.open { display: flex; }
+  .modal {
+    background: #fff; width: 100%; max-width: 720px; border-radius: 10px; overflow: hidden;
+    max-height: 92vh; display: flex; flex-direction: column;
+  }
+  .modal-header {
+    background: var(--navy); color: #fff; padding: 14px 18px;
+    display: flex; justify-content: space-between; align-items: center; font-weight: 700;
+  }
+  .modal-body { padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 14px; }
+  .box { background: #F8FAFC; border: 1px solid var(--border); border-radius: 8px; padding: 14px; }
+  .exam-input {
+    width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 1rem; margin-top: 8px;
+  }
+  table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+  th, td { border: 1px solid #E2E8F0; padding: 8px; text-align: left; }
+  th { background: #F1F5F9; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <div class="flag"><span></span><span></span><span></span></div>
+    <span>ROMANYA KONSOLOSLUĞU MÜLAKAT & YEMİN ÇALIŞMA ASİSTANI</span>
+  </div>
+  <div class="header-actions">
+    <button class="btn btn-green" onclick="openExamModal()">🎙️ Mülakat Sınav Modülü</button>
+    <div class="badge-progress" id="progressBadge">İlerleme: 0 / 74 (%0)</div>
+  </div>
+</header>
+
+<div class="filters">
+  <select id="catFilter" onchange="renderList()"></select>
+  <select id="statusFilter" onchange="renderList()">
+    <option value="Tümü">Tüm Durumlar</option>
+    <option value="Çalışılacak">Çalışılacak</option>
+    <option value="Tekrar Edilecek">Tekrar Edilecek</option>
+    <option value="Öğrenildi">Öğrenildi</option>
+  </select>
+  <input type="text" id="searchInput" placeholder="Rumence veya Türkçe kelime ara..." oninput="renderList()">
+</div>
+
+<div class="container">
+  <div class="panel">
+    <div class="list-wrapper" id="questionList"></div>
+  </div>
+
+  <div class="panel detail-panel">
+    <div class="cat-tag" id="detailCat">#1 • Kategori</div>
+
+    <div>
+      <div class="section-label">RUMENCE SORU</div>
+      <div class="ro-text" id="detailRoQ">-</div>
+      <div class="tr-text" id="detailTrQ">-</div>
+      <button class="btn btn-blue" onclick="speakSelected('soru')">🔊 Soruyu Sesli Dinle</button>
+    </div>
+
+    <hr class="divider">
+
+    <div>
+      <div class="section-label">ÖRNEK RUMENCE CEVAP</div>
+      <div class="ro-text" id="detailRoA">-</div>
+      <div class="tr-text" id="detailTrA">-</div>
+      <button class="btn btn-teal" onclick="speakSelected('cevap')">🔊 Örnek Cevabı Dinle</button>
+    </div>
+
+    <hr class="divider">
+
+    <div>
+      <div class="section-label" style="margin-bottom:8px;">ÇALIŞMA DURUMU</div>
+      <div class="status-buttons">
+        <button class="btn btn-gray" onclick="setStatus('Çalışılacak')">Çalışılacak</button>
+        <button class="btn btn-amber" onclick="setStatus('Tekrar Edilecek')">Tekrar Edilecek</button>
+        <button class="btn btn-green" onclick="setStatus('Öğrenildi')">Öğrenildi</button>
+      </div>
+    </div>
+
+    <div class="status-bar" id="statusBar">
+      İpucu: Köşeli parantez yerlerinde kendi bilginizi söyleyebilmeniz için kısa bekleme yapılır.
+    </div>
+  </div>
+</div>
+
+<!-- Mülakat Sınav Modalı -->
+<div class="modal-backdrop" id="examModal">
+  <div class="modal">
+    <div class="modal-header">
+      <span id="examHeaderTitle">🎙️ SESLİ MÜLAKAT SINAV MODÜLÜ</span>
+      <button class="btn btn-red" style="padding:4px 10px;" onclick="closeExamModal()">✕</button>
+    </div>
+    <div class="modal-body" id="examBody"></div>
+  </div>
+</div>
+
+<script>
+const SORULAR = [
+  ["1. Tanışma ve Kişisel Bilgiler", "Cum vă cheamă?", "Adınız nedir? (Resmi)", "Mă cheamă [Adınız Soyadınız].", "Adım [Adınız Soyadınız]."],
+  ["1. Tanışma ve Kişisel Bilgiler", "Cum vă numiți?", "İsminiz nedir? (Resmi)", "Mă numesc [Adınız Soyadınız].", "İsmim [Adınız Soyadınız]."],
+  ["1. Tanışma ve Kişisel Bilgiler", "Care este numele tău?", "Senin adın nedir? (Samimi)", "Numele meu este [Adınız].", "Benim adım [Adınız]."],
+  ["1. Tanışma ve Kişisel Bilgiler", "Care este numele dumneavoastră?", "Sizin adınız nedir? (Resmi)", "Numele meu este [Adınız Soyadınız].", "Benim adım [Adınız Soyadınız]."],
+  ["1. Tanışma ve Kişisel Bilgiler", "Numele și prenumele?", "Soyadınız ve adınız?", "Numele meu de familie este [Soyadınız], iar prenumele este [Adınız].", "Soyadım [Soyadınız], adım ise [Adınız]."],
+  ["1. Tanışma ve Kişisel Bilgiler", "Care este numele dumneavoastră de familie?", "Soyadınız nedir?", "Numele meu de familie este [Soyadınız].", "Soyadım [Soyadınız]."],
+  ["1. Tanışma ve Kişisel Bilgiler", "Vă rog să vă prezentați.", "Lütfen kendinizi tanıtınız.", "Bună ziua! Mă numesc [Adınız], am [Yaşınız] de ani și locuiesc în [Şehir].", "İyi günler! Adım [Adınız], [Yaşınız] yaşındayım ve [Şehir]'da yaşıyorum."],
+  ["1. Tanışma ve Kişisel Bilgiler", "Prezentați-vă, vă rog.", "Kendinizi tanıtın lütfen.", "Sunt [Adınız], de profesie [Mesleğiniz] și sunt căsătorit(ă).", "Ben [Adınız], mesleğim [Mesleğiniz] ve evliyim."],
+  ["1. Tanışma ve Kişisel Bilgiler", "Puteți să vă prezentați?", "Kendinizi tanıtabilir misiniz?", "Da, desigur. Mă numesc [Adınız] și am venit pentru jurământ.", "Evet, elbette. Adım [Adınız] ve yemin töreni için geldim."],
+  ["1. Tanışma ve Kişisel Bilgiler", "Vorbiți puțin despre dumneavoastră.", "Biraz kendinizden bahsedin.", "Am [Yaşınız] de ani, lucrez ca [Mesleğiniz] și îmi place să călătoresc.", "[Yaşınız] yaşındayım, [Mesleğiniz] olarak çalışıyorum ve seyahat etmeyi severim."],
+  ["1. Tanışma ve Kişisel Bilgiler", "Spuneți-mi câteva lucruri despre dumneavoastră.", "Bana kendinizle ilgili birkaç şey söyleyin.", "Locuiesc în Turcia, am absolvit universitatea și am o familie frumoasă.", "Türkiye'de yaşıyorum, üniversite mezunuyum ve güzel bir ailem var."],
+  ["1. Tanışma ve Kişisel Bilgiler", "Câți ani aveți?", "Kaç yaşındasınız?", "Am [Yaşınız] de ani.", "20 ve üzeri sayılarda 'de ani' kullanılır; 1-19 arası sadece 'ani' denir."],
+  ["1. Tanışma ve Kişisel Bilgiler", "Ce mai faceți?", "Nasılsınız? / Ne yapıyorsunuz?", "Mulțumesc, sunt foarte bine. Dumneavoastră ce mai faceți?", "Teşekkür ederim, çok iyiyim. Siz nasılsınız?"],
+
+  ["2. Doğum ve Memleket", "Care este data nașterii?", "Doğum tarihiniz nedir?", "Data mea de naștere este [Gün] [Ay] [Yıl].", "Doğum tarihim [Gün] [Ay] [Yıl]."],
+  ["2. Doğum ve Memleket", "Când v-ați născut?", "Ne zaman doğdunuz?", "M-am născut pe [Gün] [Ay] [Yıl].", "[Gün] [Ay] [Yıl] tarihinde doğdum."],
+  ["2. Doğum ve Memleket", "Unde și în ce an v-ați născut?", "Nerede ve hangi yılda doğdunuz?", "M-am născut în [Şehir], în anul [Yıl].", "[Şehir]'da, [Yıl] yılında doğdum."],
+  ["2. Doğum ve Memleket", "Locul tău de naștere?", "Doğum yerin neresi?", "Locul meu de naștere este [Şehir], Turcia.", "Doğum yerim [Şehir], Türkiye."],
+  ["2. Doğum ve Memleket", "De unde ai venit?", "Nereden geldin?", "Am venit din [Şehir].", "[Şehir]'dan geldim."],
+  ["2. Doğum ve Memleket", "Din ce țară sunteți?", "Hangi ülkedensiniz?", "Sunt din Turcia.", "Türkiyeliyim / Türkiye'denim."],
+  ["2. Doğum ve Memleket", "De ce naționalitate sunteți?", "Uyruğunuz nedir?", "Sunt cetățean turc.", "Türk vatandaşıyım."],
+
+  ["3. Aile ve Ebeveynler", "Cum îi cheamă pe părinții dumneavoastră?", "Ebeveynlerinizin adları nedir?", "Pe tatăl meu îl cheamă [Baba Adı], iar pe mama mea o cheamă [Anne Adı].", "Babamın adı [Baba Adı], annemin adı ise [Anne Adı]."],
+  ["3. Aile ve Ebeveynler", "Care este numele părinților tăi?", "Anne ve babanın adı nedir?", "Numele părinților mei sunt [Baba Adı] și [Anne Adı].", "Ebeveynlerimin adları [Baba Adı] ve [Anne Adı]."],
+  ["3. Aile ve Ebeveynler", "Care este numele tatălui tău?", "Babanın adı nedir?", "Numele tatălui meu este [Baba Adı].", "Babamın adı [Baba Adı]."],
+  ["3. Aile ve Ebeveynler", "Care este numele mamei tale?", "Annenin adı nedir?", "Numele mamei mele este [Anne Adı].", "Annemin adı [Anne Adı]."],
+  ["3. Aile ve Ebeveynler", "Unde trăiesc părinții dumneavoastră?", "Anne ve babanız nerede yaşıyor?", "Părinții mei trăiesc în [Şehir], Turcia.", "Ebeveynlerim [Şehir], Türkiye'de yaşıyor."],
+  ["3. Aile ve Ebeveynler", "Mai trăiesc bunicii?", "Büyükannen ve büyükbaban hâlâ hayatta mı?", "Nu, din păcate au decedat. / Da, bunica mea mai trăiește.", "Hayır, maalesef vefat ettiler. / Evet, büyükannem hâlâ yaşıyor."],
+  ["3. Aile ve Ebeveynler", "Cine din familie era cetățean român?", "Aileden kim Romanya vatandaşıydı?", "Bunicul meu era cetățean român.", "Dedem Romanya vatandaşıydı."],
+  ["3. Aile ve Ebeveynler", "Mai sunt și alți cetățeni români în familia dumneavoastră?", "Ailenizde başka Romanya vatandaşları da var mı?", "Da, mama mea și fratele meu au obținut deja cetățenia română.", "Evet, annem ve erkek kardeşim Romanya vatandaşlığını çoktan aldılar."],
+
+  ["4. Büyükbaba ve Vatandaşlık Bağı", "Cum îl cheamă pe bunicul tău?", "Büyükbabanın adı nedir?", "Pe bunicul meu îl chema [Dede Adı].", "Dedemin adı [Dede Adı] idi."],
+  ["4. Büyükbaba ve Vatandaşlık Bağı", "Unde s-a născut bunicul tău?", "Büyükbaban nerede doğdu?", "Bunicul meu s-a născut în [Şehir/Köy], în România.", "Dedem Romanya'da, [Şehir/Köy]'de doğdu."],
+  ["4. Büyükbaba ve Vatandaşlık Bağı", "Ce rudă sunteți cu ultimul cetățean român?", "Son Romanya vatandaşıyla akrabalık dereceniz nedir?", "Sunt nepotul lui.", "Onun torunuyum."],
+  ["4. Büyükbaba ve Vatandaşlık Bağı", "Prin cine ai obținut cetățenia română?", "Romanya vatandaşlığını kimin üzerinden aldın?", "Am obținut cetățenia română prin bunicul meu.", "Romanya vatandaşlığını dedem üzerinden aldım."],
+  ["4. Büyükbaba ve Vatandaşlık Bağı", "Care este istoricul imigrației bunicului tău?", "Büyükbabanın göç geçmişi nedir?", "Bunicul meu a emigrat din România în Turcia în anul [Yıl].", "Dedem [Yıl] yılında Romanya'dan Türkiye'ye göç etti."],
+  ["4. Büyükbaba ve Vatandaşlık Bağı", "De ce vreți cetățenia română?", "Neden Romanya vatandaşlığı istiyorsunuz?", "Doresc să îmi redobândesc originile și să am legături mai strânse cu România.", "Kökenlerimi yeniden kazanmak ve Romanya ile daha sıkı bağlara sahip olmak istiyorum."],
+  ["4. Büyükbaba ve Vatandaşlık Bağı", "De ce vrei să devii cetățean român?", "Neden Romanya vatandaşı olmak istiyorsun?", "Pentru că strămoșii mei sunt din România și respect cultura română.", "Çünkü atalarım Romanya'dan geliyor ve Rumen kültürüne saygı duyuyorum."],
+
+  ["5. Eğitim ve Dil Bilgisi", "La ce universitate ai studiat?", "Hangi üniversitede okudun?", "Am studiat la Universitatea [Üniversite Adı].", "[Üniversite Adı] Üniversitesi'nde okudum."],
+  ["5. Eğitim ve Dil Bilgisi", "Ce universitate ai absolvit?", "Hangi üniversiteden mezun oldun?", "Am absolvit Universitatea din [Şehir/Üniversite].", "[Şehir/Üniversite] Üniversitesi'nden mezun oldum."],
+  ["5. Eğitim ve Dil Bilgisi", "Ce ai studiat?", "Ne okudun? (Bölümün ne?)", "Am studiat economie.", "Ekonomi okudum."],
+  ["5. Eğitim ve Dil Bilgisi", "Unde ai studiat?", "Nerede okudun?", "Am studiat în [Şehir], Turcia.", "[Şehir], Türkiye'de okudum."],
+  ["5. Eğitim ve Dil Bilgisi", "Ce limbi vorbiți?", "Hangi dilleri konuşuyorsunuz?", "Vorbesc limba turcă, limba engleză și puțin limba română.", "Türkçe, İngilizce ve biraz Rumence konuşuyorum."],
+  ["5. Eğitim ve Dil Bilgisi", "Cum ai învățat româna?", "Rumenceyi nasıl öğrendin?", "Am învățat româna cu un profesor privat și prin aplicații online.", "Rumenceyi özel bir öğretmenle ve çevrimiçi uygulamalarla öğrendim."],
+  ["5. Eğitim ve Dil Bilgisi", "Știți românește?", "Rumence biliyor musunuz?", "Da, știu puțin românește, dar încă învăț.", "Evet, biraz Rumence biliyorum ama hâlâ öğreniyorum."],
+  ["5. Eğitim ve Dil Bilgisi", "Vorbiți românește?", "Rumence konuşuyor musunuz?", "Da, vorbesc puțin românește.", "Evet, biraz Rumence konuşuyorum."],
+  ["5. Eğitim ve Dil Bilgisi", "Vorbiți limba română?", "Rumen dilini konuşuyor musunuz?", "Da, înțeleg și vorbesc limba română la nivel de bază.", "Evet, Rumen dilini temel düzeyde anlıyor ve konuşuyorum."],
+
+  ["6. Meslek ve Medeni Durum", "Cu ce vă ocupați?", "Ne işle meşgulsünüz?", "Sunt inginer și lucrez la o companie privată.", "Mühendisim ve özel bir şirkette çalışıyorum."],
+  ["6. Meslek ve Medeni Durum", "Ce profesie aveți?", "Mesleğiniz nedir?", "De profesie sunt profesor.", "Mesleğim öğretmenlik."],
+  ["6. Meslek ve Medeni Durum", "Ce meserie aveți?", "İşiniz / mesleğiniz nedir?", "Am meseria de medic.", "Doktorluk mesleğine sahibim."],
+  ["6. Meslek ve Medeni Durum", "Ești căsătorit?", "Evli misin?", "Da, sunt căsătorit.", "Evet, evliyim."],
+  ["6. Meslek ve Medeni Durum", "Sunteți căsătorit cu o cetățeană turcă?", "Bir Türk vatandaşıyla mı evlisiniz?", "Da, soția mea este cetățeană turcă.", "Evet, eşim Türk vatandaşı."],
+
+  ["7. Çocuklar", "Ai copii?", "Çocuğun var mı?", "Da, am doi copii.", "Evet, iki çocuğum var."],
+  ["7. Çocuklar", "Aveți copii?", "Çocuğunuz var mı?", "Da, am un băiat și o fată.", "Evet, bir oğlum ve bir kızım var."],
+  ["7. Çocuklar", "Cum îi cheamă pe copiii tăi?", "Çocuklarının adları nedir?", "Pe fiul meu îl cheamă [Oğul Adı], iar pe fiica mea o cheamă [Kız Adı].", "Oğlumun adı [Oğul Adı], kızımın adı ise [Kız Adı]."],
+  ["7. Çocuklar", "Câți ani au copiii tăi?", "Çocukların kaç yaşında?", "Fiul meu are [Yaş] ani, iar fiica mea are [Yaş] ani.", "Oğlum [Yaş] yaşında, kızım ise [Yaş] yaşında."],
+
+  ["8. Romanya'ya Seyahat", "Ați fost vreodată în România?", "Hiç Romanya'ya gittiniz mi?", "Da, am fost de două ori în România.", "Evet, Romanya'ya iki kez gittim."],
+  ["8. Romanya'ya Seyahat", "Ați fost în România?", "Romanya'da bulundunuz mu?", "Da, am fost în România în vacanță.", "Evet, tatil için Romanya'da bulundum."],
+  ["8. Romanya'ya Seyahat", "Ai fost în România?", "Romanya'ya gittin mi?", "Da, am vizitat România anul trecut.", "Evet, geçen yıl Romanya'yı ziyaret ettim."],
+  ["8. Romanya'ya Seyahat", "Ați vizitat România?", "Romanya'yı ziyaret ettiniz mi?", "Da, este o țară foarte frumoasă.", "Evet, çok güzel bir ülke."],
+  ["8. Romanya'ya Seyahat", "Unde ați fost?", "Nereye gittiniz?", "Am fost în București și în Brașov.", "Bükreş'e ve Braşov'a gittim."],
+  ["8. Romanya'ya Seyahat", "Ce orașe ați vizitat?", "Hangi şehirleri ziyaret ettiniz?", "Am vizitat București, Constanța și Sibiu.", "Bükreş, Köstence ve Sibiu'yu ziyaret ettim."],
+  ["8. Romanya'ya Seyahat", "Când ați fost?", "Ne zaman gittiniz?", "Am fost acolo vara trecută, în luna iulie.", "Geçen yaz, temmuz ayında oradaydım."],
+
+  ["9. Romanya Hakkında Genel Bilgiler", "Care este capitala României?", "Romanya'nın başkenti neresidir?", "Capitala României este București.", "Romanya'nın başkenti Bükreş'tir."],
+  ["9. Romanya Hakkında Genel Bilgiler", "Ce fluviu trece prin România?", "Romanya'dan hangi nehir geçer?", "Prin România trece fluviul Dunărea.", "Romanya'dan Tuna Nehri geçer."],
+  ["9. Romanya Hakkında Genel Bilgiler", "Care sunt culorile drapelului României?", "Romanya bayrağının renkleri nelerdir?", "Culorile drapelului sunt albastru, galben și roșu.", "Bayrağın renkleri mavi, sarı ve kırmızıdır."],
+  ["9. Romanya Hakkında Genel Bilgiler", "Ce simbolizează culorile steagului României?", "Romanya bayrağının renkleri neyi simgeler?", "Albastru simbolizează libertatea, galben dreptatea, iar roșu fraternitatea.", "Mavi özgürlüğü, sarı adaleti, kırmızı ise kardeşliği simgeler."],
+  ["9. Romanya Hakkında Genel Bilgiler", "Cu ce țări se învecinează România?", "Romanya hangi ülkelerle komşudur?", "România se învecinează cu Ucraina, Republica Moldova, Bulgaria, Serbia și Ungaria.", "Romanya; Ukrayna, Moldova Cumhuriyeti, Bulgaristan, Sırbistan ve Macaristan ile komşudur."],
+
+  ["10. Konsolosluk ve Yemin İşlemleri", "Cu ce vă pot ajuta?", "Size nasıl yardımcı olabilirim?", "Bună ziua! Am venit pentru depunerea jurământului de credință.", "İyi günler! Sadakat yemini etmek için geldim."],
+  ["10. Konsolosluk ve Yemin İşlemleri", "Aveți programare?", "Randevunuz var mı?", "Da, am programare astăzi la ora [Saat].", "Evet, bugün saat [Saat]'te randevum var."],
+  ["10. Konsolosluk ve Yemin İşlemleri", "Pentru ce aveți programare?", "Ne için randevunuz var?", "Am programare pentru jurământul de cetățenie română.", "Romanya vatandaşlık yemini için randevum var."],
+  ["10. Konsolosluk ve Yemin İşlemleri", "Pentru ce ați venit?", "Ne için geldiniz?", "Am venit să depun jurământul față de România.", "Romanya'ya bağlılık yemini etmek için geldim."],
+  ["10. Konsolosluk ve Yemin İşlemleri", "Ce doriți?", "Ne istiyorsunuz?", "Doresc să îmi ridic certificatul de cetățenie după jurământ.", "Yeminden sonra vatandaşlık sertifikamı almak istiyorum."],
+  ["10. Konsolosluk ve Yemin İşlemleri", "Ești aici pentru jurământ?", "Yemin için mi buradasın?", "Da, sunt aici pentru jurământ.", "Evet, yemin için buradayım."],
+  ["10. Konsolosluk ve Yemin İşlemleri", "Îmi dați actele, vă rog?", "Evrakları bana verir misiniz lütfen?", "Da, poftiți actele mele.", "Evet, buyurun evraklarım."],
+  ["10. Konsolosluk ve Yemin İşlemleri", "Aveți toate actele?", "Tüm evraklarınız tam mı?", "Da, am toate actele necesare la mine.", "Evet, gerekli tüm evraklar yanımda."],
+  ["10. Konsolosluk ve Yemin İşlemleri", "Ce acte aveți?", "Hangi evraklarınız var?", "Am pașaportul, buletinul, certificatul de naștere și pozele.", "Pasaportum, kimliğim, doğum belgem ve fotoğraflarım var."],
+  ["10. Konsolosluk ve Yemin İşlemleri", "Ce acte ați adus?", "Hangi evrakları getirdiniz?", "Am adus toate documentele cerute de consulat, inclusiv confirmarea programării.", "Randevu onayı dahil konsolosluğun istediği tüm belgeleri getirdim."]
+];
+
+let selectedIdx = 0;
+let progress = JSON.parse(localStorage.getItem("ro_mulakat_progress") || "{}");
+let speakToken = 0;
+let currentAudio = null;
+
+function stopAllSpeech() {
+  speakToken++;
+  if (currentAudio) {
+    currentAudio.pause();
+    currentAudio = null;
+  }
+  if ("speechSynthesis" in window) {
+    speechSynthesis.cancel();
+  }
+}
+
+function init() {
+  const catSelect = document.getElementById("catFilter");
+  const cats = ["Tümü", ...new Set(SORULAR.map(s => s[0]))];
+  cats.forEach(c => {
+    const opt = document.createElement("option");
+    opt.value = c; opt.textContent = c;
+    catSelect.appendChild(opt);
+  });
+  renderList();
+  selectQuestion(0);
+}
+
+function renderList() {
+  const cat = document.getElementById("catFilter").value;
+  const st = document.getElementById("statusFilter").value;
+  const q = document.getElementById("searchInput").value.trim().toLowerCase();
+  const listEl = document.getElementById("questionList");
+  listEl.innerHTML = "";
+
+  let learnedCount = 0;
+  SORULAR.forEach((item, i) => {
+    const status = progress[i] || "Çalışılacak";
+    if (status === "Öğrenildi") learnedCount++;
+
+    if (cat !== "Tümü" && item[0] !== cat) return;
+    if (st !== "Tümü" && status !== st) return;
+    if (q && !item.some(field => field.toLowerCase().includes(q))) return;
+
+    const pillClass = status === "Öğrenildi" ? "st-ogrenildi" : (status === "Tekrar Edilecek" ? "st-tekrar" : "st-calisilacak");
+    const div = document.createElement("div");
+    div.className = "q-item" + (i === selectedIdx ? " active" : "");
+    div.onclick = () => selectQuestion(i);
+    div.ondblclick = () => { selectQuestion(i); speakSelected("soru"); };
+    div.innerHTML = `
+      <div>
+        <div class="q-meta">#${i + 1} • ${item[0]}</div>
+        <div class="q-title">${item[1]}</div>
+      </div>
+      <span class="status-pill ${pillClass}">${status}</span>
+    `;
+    listEl.appendChild(div);
+  });
+
+  const pct = Math.round((learnedCount / SORULAR.length) * 100);
+  document.getElementById("progressBadge").textContent = `İlerleme: ${learnedCount} / ${SORULAR.length} (%${pct})`;
+}
+
+function selectQuestion(idx) {
+  selectedIdx = idx;
+  const item = SORULAR[idx];
+  document.getElementById("detailCat").textContent = `#${idx + 1} • ${item[0]}`;
+  document.getElementById("detailRoQ").textContent = item[1];
+  document.getElementById("detailTrQ").textContent = item[2];
+  document.getElementById("detailRoA").textContent = item[3];
+  document.getElementById("detailTrA").textContent = item[4];
+  renderList();
+}
+
+function setStatus(newStatus) {
+  progress[selectedIdx] = newStatus;
+  localStorage.setItem("ro_mulakat_progress", JSON.stringify(progress));
+  renderList();
+}
+
+function speakFallbackBrowser(text, token) {
+  return new Promise(resolve => {
+    if (token !== speakToken || !("speechSynthesis" in window)) return resolve();
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = "ro-RO";
+    u.rate = 0.95;
+    const voices = speechSynthesis.getVoices().filter(v => v.lang.toLowerCase().startsWith("ro"));
+    const femaleVoice = voices.find(v => /ioana|alina|female|woman|google/i.test(v.name));
+    if (femaleVoice) u.voice = femaleVoice;
+    else if (voices[0]) u.voice = voices[0];
+    u.onend = resolve;
+    u.onerror = resolve;
+    speechSynthesis.speak(u);
+  });
+}
+
+function speakPart(text, token) {
+  return new Promise(resolve => {
+    if (token !== speakToken) return resolve();
+    const url = `https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=ro&q=${encodeURIComponent(text)}`;
+    const audio = new Audio(url);
+    audio.referrerPolicy = "no-referrer";
+    currentAudio = audio;
+
+    let finished = false;
+    const done = () => {
+      if (finished) return;
+      finished = true;
+      if (currentAudio === audio) currentAudio = null;
+      resolve();
+    };
+
+    audio.onended = done;
+    audio.onerror = async () => {
+      await speakFallbackBrowser(text, token);
+      done();
+    };
+
+    const playPromise = audio.play();
+    if (playPromise !== undefined) {
+      playPromise.catch(async () => {
+        await speakFallbackBrowser(text, token);
+        done();
+      });
+    }
+  });
+}
+
+async function speakTextWithPauses(rawText, statusEl) {
+  stopAllSpeech();
+  const myToken = speakToken;
+  const parts = rawText.split(/\[[^\]]*\]/)
+    .map(p => p.replace(/\s+/g, " ").trim())
+    .filter(p => /[A-Za-zĂÂÎȘȚăâîșț0-9]/.test(p));
+
+  if (!parts.length) return;
+  const preview = parts.join("  [ ... ]  ");
+  if (statusEl) statusEl.textContent = `🔊 Okunuyor: ${preview}`;
+
+  for (let i = 0; i < parts.length; i++) {
+    if (myToken !== speakToken) return;
+    await speakPart(parts[i], myToken);
+    if (i < parts.length - 1 && myToken === speakToken) {
+      if (statusEl) statusEl.textContent = "⏸  [ Kendi bilginizi söyleyin... ]";
+      await new Promise(r => setTimeout(r, 650));
+      if (statusEl) statusEl.textContent = `🔊 Okunuyor: ${preview}`;
+    }
+  }
+  if (myToken === speakToken && statusEl) {
+    statusEl.textContent = `✔ Tamamlandı: ${preview}`;
+  }
+}
+
+function speakSelected(type) {
+  const item = SORULAR[selectedIdx];
+  const text = type === "soru" ? item[1] : item[3];
+  speakTextWithPauses(text, document.getElementById("statusBar"));
+}
+
+/* --- MÜLAKAT SINAV MODÜLÜ --- */
+let examQuestions = [];
+let examIndex = 0;
+let examResults = [];
+let hintVisible = false;
+
+function openExamModal() {
+  stopAllSpeech();
+  document.getElementById("examModal").classList.add("open");
+  renderExamSetup();
+}
+
+function closeExamModal() {
+  stopAllSpeech();
+  document.getElementById("examModal").classList.remove("open");
+}
+
+function renderExamSetup() {
+  const cats = ["Tüm Kategoriler (Karışık)", ...new Set(SORULAR.map(s => s[0]))];
+  const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+  const isFileProtocol = window.location.protocol === "file:";
+
+  let micNote = "";
+  if (!SpeechRec) {
+    micNote = `<div style="background:#FEF3C7;color:#92400E;padding:10px;border-radius:6px;font-size:0.88rem;font-weight:600;">⚠ Bu tarayıcıda sesli tanıma desteklenmiyor (Chrome veya Edge önerilir). Yazarak test edebilirsiniz.</div>`;
+  } else if (isFileProtocol) {
+    micNote = `<div style="background:#FEF3C7;color:#92400E;padding:10px;border-radius:6px;font-size:0.88rem;font-weight:600;">⚠ Dosya doğrudan (file://) açıldığı için tarayıcı mikrofonu kısıtlayabilir. Mikrofon çalışmazsa dosyayı yerel sunucu (localhost) veya HTTPS linki üzerinden açın.</div>`;
+  } else {
+    micNote = `<div style="background:#DCFCE7;color:#166534;padding:10px;border-radius:6px;font-size:0.88rem;font-weight:600;">✔ Tarayıcı mikrofon ve Rumence (ro-RO) ses tanıma desteği hazır.</div>`;
+  }
+
+  document.getElementById("examHeaderTitle").textContent = "🎙️ SESLİ MÜLAKAT SINAV MODÜLÜ";
+  document.getElementById("examBody").innerHTML = `
+    <div style="font-size:1.1rem;font-weight:700;">Mülakat Simülasyonu Ayarları</div>
+    <div style="color:#475569;font-size:0.92rem;">Konsolosluk görevlisi soruları Rumence sesli sorar. Siz de mikrofonunuza Rumence cevap verirsiniz.</div>
+    <div>
+      <label style="font-weight:600;font-size:0.9rem;">Kategori:</label><br>
+      <select id="examCat" style="width:100%;padding:8px;margin-top:4px;border-radius:6px;border:1px solid #CBD5E1;">
+        ${cats.map(c => `<option value="${c}">${c}</option>`).join("")}
+      </select>
+    </div>
+    <div>
+      <label style="font-weight:600;font-size:0.9rem;">Soru Sayısı:</label><br>
+      <select id="examLimit" style="width:100%;padding:8px;margin-top:4px;border-radius:6px;border:1px solid #CBD5E1;">
+        <option value="5">5 Soru (Hızlı Prova)</option>
+        <option value="10" selected>10 Soru (Standart Mülakat)</option>
+        <option value="20">20 Soru (Kapsamlı Test)</option>
+        <option value="999">Tümü</option>
+      </select>
+    </div>
+    ${micNote}
+    <div>
+      <button class="btn btn-green" style="padding:10px 20px;font-size:1rem;" onclick="startExam()">▶ Mülakatı Başlat</button>
+    </div>
+  `;
+}
+
+function startExam() {
+  const cat = document.getElementById("examCat").value;
+  const limit = parseInt(document.getElementById("examLimit").value, 10);
+  let pool = SORULAR.map((s, idx) => ({ idx, s })).filter(x => cat.startsWith("Tüm") || x.s[0] === cat);
+  pool.sort(() => Math.random() - 0.5);
+  examQuestions = pool.slice(0, limit);
+  examIndex = 0;
+  examResults = [];
+  renderExamQuestion();
+}
+
+function renderExamQuestion() {
+  hintVisible = false;
+  const cur = examQuestions[examIndex];
+  const total = examQuestions.length;
+  document.getElementById("examHeaderTitle").textContent = `🎙️ Mülakat Sınavı • Soru ${examIndex + 1} / ${total}`;
+
+  document.getElementById("examBody").innerHTML = `
+    <div class="cat-tag">#${cur.idx + 1} • ${cur.s[0]}</div>
+    <div class="box">
+      <div class="section-label">KONSOLOSLUK GÖREVLİSİ SORUYOR:</div>
+      <div id="examQuestionBox" style="font-weight:700;margin:8px 0;">🔒 Soruyu dinleyin ve sesli cevap verin (Görmek için İpucu butonuna basın)</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <button class="btn btn-blue" onclick="playExamQuestion()">🔊 Soruyu Tekrar Dinle</button>
+        <button class="btn btn-gray" id="hintBtn" onclick="toggleHint()">👁️ Soruyu ve Örnek Cevabı Göster</button>
+      </div>
+    </div>
+
+    <div class="box" style="background:#fff;">
+      <div class="section-label">SİZİN CEVABINIZ (RUMENCE):</div>
+      <div style="display:flex;align-items:center;gap:10px;margin-top:8px;flex-wrap:wrap;">
+        <button class="btn btn-red" id="micBtn" onclick="startVoiceAnswer()">🎙️ Sesli Cevap Ver (Konuş)</button>
+        <span id="micStatus" style="font-size:0.88rem;color:#475569;font-style:italic;">Hazır</span>
+      </div>
+      <input type="text" id="examAnswerInput" class="exam-input" placeholder="Algılanan veya yazılan Rumence cevabınız (Enter ile değerlendir)..." onkeydown="if(event.key==='Enter') evaluateAnswer()">
+    </div>
+
+    <div class="box" id="evalBox">
+      <div id="evalScore" style="font-weight:700;color:#334155;">Cevabınızı verdikten sonra değerlendirme burada görünecektir.</div>
+      <div id="evalCompare" style="font-size:0.88rem;color:#475569;margin-top:6px;white-space:pre-line;"></div>
+    </div>
+
+    <div style="display:flex;justify-content:flex-end;">
+      <button class="btn btn-navy" onclick="nextExamQuestion()">${examIndex === total - 1 ? "Sınavı Bitir ve Raporu Gör ✔" : "Sonraki Soru ➡"}</button>
+    </div>
+  `;
+  playExamQuestion();
+}
+
+function playExamQuestion() {
+  const cur = examQuestions[examIndex];
+  speakTextWithPauses(cur.s[1], null);
+}
+
+function toggleHint() {
+  const cur = examQuestions[examIndex];
+  hintVisible = !hintVisible;
+  const qBox = document.getElementById("examQuestionBox");
+  const btn = document.getElementById("hintBtn");
+  if (hintVisible) {
+    qBox.innerHTML = `Soru: ${cur.s[1]} <span style="font-weight:400;color:#475569;">(${cur.s[2]})</span><br>Örnek Cevap: ${cur.s[3]} <span style="font-weight:400;color:#475569;">(${cur.s[4]})</span>`;
+    btn.textContent = "🙈 İpucunu Gizle";
+  } else {
+    qBox.textContent = "🔒 Soruyu dinleyin ve sesli cevap verin (Görmek için İpucu butonuna basın)";
+    btn.textContent = "👁️ Soruyu ve Örnek Cevabı Göster";
+  }
+}
+
+async function startVoiceAnswer() {
+  const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SpeechRec) {
+    alert("Bu tarayıcıda ses tanıma desteklenmiyor. Lütfen Google Chrome veya Microsoft Edge kullanın ya da cevabınızı kutuya yazıp Enter'a basın.");
+    return;
+  }
+  stopAllSpeech();
+
+  const micBtn = document.getElementById("micBtn");
+  const micStatus = document.getElementById("micStatus");
+  const inputEl = document.getElementById("examAnswerInput");
+
+  if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      stream.getTracks().forEach(track => track.stop());
+    } catch (err) {
+      micStatus.textContent = "Mikrofon izni reddedildi veya yerel dosya (file://) engeli var. Adres çubuğundan izin verin veya localhost/HTTPS üzerinden açın.";
+      micStatus.style.color = "#DC2626";
+      return;
+    }
+  }
+
+  const rec = new SpeechRec();
+  rec.lang = "ro-RO";
+  rec.interimResults = true;
+  rec.continuous = false;
+  rec.maxAlternatives = 3;
+
+  let finalTranscript = "";
+  let gotResult = false;
+
+  micBtn.disabled = true;
+  micBtn.textContent = "🔴 Dinleniyor... Konuşun";
+  micStatus.textContent = "Mikrofon açık, Rumence cevabınızı söyleyin...";
+  micStatus.style.color = "#DC2626";
+
+  rec.onresult = (e) => {
+    gotResult = true;
+    let interim = "";
+    for (let i = e.resultIndex; i < e.results.length; i++) {
+      const text = e.results[i][0].transcript;
+      if (e.results[i].isFinal) {
+        finalTranscript += text + " ";
+      } else {
+        interim += text;
+      }
+    }
+    inputEl.value = (finalTranscript + interim).trim();
+  };
+
+  rec.onerror = (e) => {
+    const mesajlar = {
+      "not-allowed": "Mikrofon izni engellendi. Dosya doğrudan (file://) açıldıysa Chrome/Edge yerel dosyada mikrofona izin vermez.",
+      "service-not-allowed": "Konuşma servisi engellendi (HTTPS veya localhost üzerinden açmanız gerekir).",
+      "no-speech": "Ses duyulmadı. Mikrofona biraz daha yakın konuşup tekrar deneyin.",
+      "audio-capture": "Bilgisayarda veya telefonda aktif bir mikrofon bulunamadı.",
+      "network": "İnternet bağlantısı hatası (Google ses tanıma için internet gerekir)."
+    };
+    micStatus.textContent = mesajlar[e.error] || ("Hata: " + e.error);
+    micStatus.style.color = "#DC2626";
+  };
+
+  rec.onend = () => {
+    micBtn.disabled = false;
+    micBtn.textContent = "🎙️ Sesli Cevap Ver (Konuş)";
+    if (gotResult && inputEl.value.trim()) {
+      micStatus.textContent = "✔ Ses algılandı";
+      micStatus.style.color = "#16A34A";
+      evaluateAnswer();
+    }
+  };
+
+  try {
+    rec.start();
+  } catch (err) {
+    micBtn.disabled = false;
+    micBtn.textContent = "🎙️ Sesli Cevap Ver (Konuş)";
+    micStatus.textContent = "Başlatılamadı: " + err.message;
+  }
+}
+
+function normalizeRo(str) {
+  return str.toLowerCase()
+    .replace(/[ăâ]/g, "a").replace(/î/g, "i").replace(/[șş]/g, "s").replace(/[țţ]/g, "t")
+    .replace(/[^a-z0-9\s]/g, " ").replace(/\s+/g, " ").trim();
+}
+
+function evaluateAnswer() {
+  const userAns = document.getElementById("examAnswerInput").value.trim();
+  if (!userAns) return;
+  const cur = examQuestions[examIndex];
+  const kNorm = normalizeRo(userAns);
+  const kWords = new Set(kNorm.split(" "));
+
+  let bestScore = 0;
+  cur.s[3].split("/").forEach(alt => {
+    const cleanTemplate = normalizeRo(alt.replace(/\[[^\]]*\]/g, " "));
+    const sWords = cleanTemplate.split(" ").filter(Boolean);
+    if (!sWords.length) return;
+    const matched = sWords.filter(w => kWords.has(w)).length;
+    const score = Math.min(100, Math.round((matched / sWords.length) * 100));
+    if (score > bestScore) bestScore = score;
+  });
+
+  const comment = bestScore >= 80 ? "Mükemmel! Kalıp ve telaffuz son derece doğru."
+    : bestScore >= 55 ? "İyi! Ana kalıp doğru, küçük telaffuz farkları var."
+    : bestScore >= 30 ? "Kısmen yakın. Örnek cevabı tekrar dinleyip deneyebilirsiniz."
+    : "Farklı bir ifade algılandı. Örnek cevabı kontrol edin.";
+
+  const scoreEl = document.getElementById("evalScore");
+  scoreEl.textContent = `Uyum Puanı: %${bestScore} — ${comment}`;
+  scoreEl.style.color = bestScore >= 75 ? "#16A34A" : (bestScore >= 45 ? "#D97706" : "#DC2626");
+
+  document.getElementById("evalCompare").textContent =
+    `Soru: ${cur.s[1]} (${cur.s[2]})\nSizin Cevabınız: ${userAns}\nÖrnek Cevap: ${cur.s[3]} (${cur.s[4]})`;
+
+  examResults[examIndex] = { no: cur.idx + 1, soru: cur.s[1], cevap: userAns, skor: bestScore };
+}
+
+function nextExamQuestion() {
+  if (!examResults[examIndex]) {
+    const cur = examQuestions[examIndex];
+    examResults[examIndex] = { no: cur.idx + 1, soru: cur.s[1], cevap: "(Boş geçildi)", skor: 0 };
+  }
+  if (examIndex + 1 < examQuestions.length) {
+    examIndex++;
+    renderExamQuestion();
+  } else {
+    renderExamReport();
+  }
+}
+
+function renderExamReport() {
+  stopAllSpeech();
+  const avg = (examResults.reduce((a, b) => a + b.skor, 0) / examResults.length).toFixed(1);
+  document.getElementById("examHeaderTitle").textContent = "📊 MÜLAKAT SINAV SONUÇ RAPORU";
+  document.getElementById("examBody").innerHTML = `
+    <div style="font-size:1.25rem;font-weight:700;color:#1E3A5F;">Genel Başarı Ortalaması: %${avg} (${examResults.length} Soru)</div>
+    <div style="color:#475569;font-size:0.92rem;">${avg >= 75 ? "Tebrikler! Konsolosluk mülakatına hazırsınız." : "İyi gidiyorsunuz, düşük puanlı soruları tekrar çalışmanız faydalı olacaktır."}</div>
+    <div style="max-height:320px;overflow-y:auto;">
+      <table>
+        <thead><tr><th>No</th><th>Soru</th><th>Sizin Cevabınız</th><th>Puan</th></tr></thead>
+        <tbody>
+          ${examResults.map(r => `<tr><td>${r.no}</td><td>${r.soru}</td><td>${r.cevap}</td><td><b>%${r.skor}</b></td></tr>`).join("")}
+        </tbody>
+      </table>
+    </div>
+    <div style="display:flex;justify-content:space-between;">
+      <button class="btn btn-blue" onclick="renderExamSetup()">🔄 Yeni Sınav Başlat</button>
+      <button class="btn btn-gray" onclick="closeExamModal()">Kapat</button>
+    </div>
+  `;
+}
+
+if ("speechSynthesis" in window) {
+  speechSynthesis.onvoiceschanged = () => speechSynthesis.getVoices();
+}
+init();
+</script>
+</body>
+</html>
