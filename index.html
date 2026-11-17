@@ -119,6 +119,11 @@
     color: var(--navy);
     border-color: #93C5FD;
   }
+  .mobile-menu-exam {
+    background: rgba(22, 163, 74, 0.28);
+    border-color: rgba(74, 222, 128, 0.45);
+    color: #DCFCE7;
+  }
 
   .filters {
     background: #E2E8F0; padding: 12px 20px; display: flex; flex-wrap: wrap; gap: 10px; align-items: center;
@@ -138,6 +143,7 @@
   @media (max-width: 860px) {
     .hamburger-btn { display: inline-flex; align-items: center; justify-content: center; }
     .nav-tabs { display: none; }
+    .desktop-exam-btn { display: none; }
     .brand { font-size: 0.92rem; }
     .container { grid-template-columns: 1fr; }
     .detail-panel { order: 1; border: 2px solid var(--blue); }
@@ -233,11 +239,11 @@
     <button type="button" class="hamburger-btn" id="hamburgerBtn" aria-label="Menüyü Aç/Kapat" onclick="toggleMobileMenu()">☰</button>
     <div class="brand">
       <div class="flag"><span></span><span></span><span></span></div>
-      <span>ROMANYA KONSOLOSLUĞU MÜLAKAT & YEMİN <small style="opacity:.75;font-weight:400;">(v3.6)</small></span>
+      <span>ROMANYA KONSOLOSLUĞU MÜLAKAT & YEMİN <small style="opacity:.75;font-weight:400;">(v3.7)</small></span>
     </div>
   </div>
   <div class="header-actions">
-    <button type="button" class="btn btn-green" onclick="openExamModal()">🎙️ Mülakat Sınav Modülü</button>
+    <button type="button" class="btn btn-green desktop-exam-btn" onclick="openExamModal()">🎙️ Mülakat Sınav Modülü</button>
     <div class="badge-progress" id="progressBadge">İlerleme: 0 / 74 (%0)</div>
   </div>
 </header>
@@ -251,6 +257,10 @@
   <button type="button" class="mobile-menu-item" id="mobBtnOath" onclick="selectMobileTab('oath')">
     <span>📜 Yemin Metni Ezber</span>
     <span id="mobCheckOath"></span>
+  </button>
+  <button type="button" class="mobile-menu-item mobile-menu-exam" onclick="openExamModal()">
+    <span>🎙️ Mülakat Sınav Modülü</span>
+    <span>▶</span>
   </button>
 </div>
 
@@ -270,7 +280,7 @@
       <option value="Tekrar Edilecek">Tekrar Edilecek</option>
       <option value="Öğrenildi">Öğrenildi</option>
     </select>
-    <input type="text" id="searchInput" placeholder="Rumence veya Türkçe kelime ara..." oninput="renderList()">
+    <input type="text" id="searchInput" placeholder="Rumence kelime ara..." oninput="renderList()">
   </div>
 
   <div class="container">
@@ -530,10 +540,16 @@ function switchTab(tab) {
 
 function init() {
   const catSelect = document.getElementById("catFilter");
-  const cats = ["Tümü", ...new Set(SORULAR.map(s => s[0]))];
+  const allOpt = document.createElement("option");
+  allOpt.value = "Tümü";
+  allOpt.textContent = "Konu Kategorileri";
+  catSelect.appendChild(allOpt);
+
+  const cats = [...new Set(SORULAR.map(s => s[0]))];
   cats.forEach(c => {
     const opt = document.createElement("option");
-    opt.value = c; opt.textContent = c;
+    opt.value = c;
+    opt.textContent = c;
     catSelect.appendChild(opt);
   });
   switchTab("questions");
