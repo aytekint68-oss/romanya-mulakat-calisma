@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
@@ -54,6 +54,7 @@
   .btn-gray { background: var(--muted); }
   .btn-red { background: var(--red); }
   .btn-navy { background: var(--navy); }
+  .btn-sm { padding: 6px 10px; font-size: 0.82rem; }
 
   /* Üst Sekme Çubuğu */
   .nav-tabs {
@@ -80,7 +81,15 @@
     max-width: 1250px; margin: 16px auto; padding: 0 16px;
     display: grid; grid-template-columns: 1.2fr 1fr; gap: 16px;
   }
-  @media (max-width: 860px) { .container { grid-template-columns: 1fr; } }
+  .list-panel { order: 1; }
+  .detail-panel { order: 2; }
+
+  @media (max-width: 860px) {
+    .container { grid-template-columns: 1fr; }
+    .detail-panel { order: 1; border: 2px solid var(--blue); }
+    .list-panel { order: 2; }
+    .list-wrapper { max-height: 44vh; }
+  }
 
   .oath-container {
     max-width: 1000px; margin: 18px auto; padding: 0 16px; display: flex; flex-direction: column; gap: 16px;
@@ -121,11 +130,15 @@
   .st-tekrar { background: #FEF3C7; color: #92400E; }
   .st-ogrenildi { background: #DCFCE7; color: #166534; }
 
-  .detail-panel { padding: 20px; display: flex; flex-direction: column; gap: 14px; }
+  .detail-panel { padding: 20px; display: flex; flex-direction: column; gap: 14px; scroll-margin-top: 12px; }
+  .detail-top-bar {
+    display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap;
+  }
   .cat-tag {
     display: inline-block; background: #EBF4FF; color: var(--navy); font-weight: 700;
-    font-size: 0.82rem; padding: 4px 10px; border-radius: 5px; align-self: flex-start;
+    font-size: 0.82rem; padding: 4px 10px; border-radius: 5px;
   }
+  .nav-arrows { display: flex; gap: 6px; }
   .section-label { font-size: 0.78rem; font-weight: 700; color: var(--muted); letter-spacing: .5px; }
   .ro-text { font-size: 1.15rem; font-weight: 700; margin: 4px 0; }
   .tr-text { font-size: 0.95rem; font-style: italic; color: #475569; margin-bottom: 8px; }
@@ -164,7 +177,7 @@
 <header>
   <div class="brand">
     <div class="flag"><span></span><span></span><span></span></div>
-    <span>ROMANYA KONSOLOSLUĞU MÜLAKAT & YEMİN ÇALIŞMA ASİSTANI <small style="opacity:.75;font-weight:400;">(v3.4)</small></span>
+    <span>ROMANYA KONSOLOSLUĞU MÜLAKAT & YEMİN ÇALIŞMA ASİSTANI <small style="opacity:.75;font-weight:400;">(v3.5)</small></span>
   </div>
   <div class="header-actions">
     <button type="button" class="btn btn-green" onclick="openExamModal()">🎙️ Mülakat Sınav Modülü</button>
@@ -187,16 +200,22 @@
       <option value="Tekrar Edilecek">Tekrar Edilecek</option>
       <option value="Öğrenildi">Öğrenildi</option>
     </select>
-    <input type="text" id="searchInput" placeholder="Rumence kelime ara..." oninput="renderList()">
+    <input type="text" id="searchInput" placeholder="Rumence veya Türkçe kelime ara..." oninput="renderList()">
   </div>
 
   <div class="container">
-    <div class="panel">
+    <div class="panel list-panel">
       <div class="list-wrapper" id="questionList"></div>
     </div>
 
-    <div class="panel detail-panel">
-      <div class="cat-tag" id="detailCat">#1 • Kategori</div>
+    <div class="panel detail-panel" id="detailPanel">
+      <div class="detail-top-bar">
+        <div class="cat-tag" id="detailCat">#1 • Kategori</div>
+        <div class="nav-arrows">
+          <button type="button" class="btn btn-navy btn-sm" onclick="stepQuestion(-1)">⬅ Önceki</button>
+          <button type="button" class="btn btn-navy btn-sm" onclick="stepQuestion(1)">Sonraki ➡</button>
+        </div>
+      </div>
 
       <div>
         <div class="section-label">RUMENCE SORU</div>
@@ -432,7 +451,7 @@ function init() {
     catSelect.appendChild(opt);
   });
   renderList();
-  selectQuestion(0);
+  selectQuestion(0, false);
   renderOathSection();
 }
 
@@ -584,26 +603,38 @@ function startOathVoiceTest() {
 }
 
 /* --- SORU LİSTESİ VE DETAY PANELİ --- */
-function renderList() {
+function getFilteredIndices() {
   const cat = document.getElementById("catFilter").value;
   const st = document.getElementById("statusFilter").value;
   const q = document.getElementById("searchInput").value.trim().toLowerCase();
+  const result = [];
+  SORULAR.forEach((item, i) => {
+    const status = progress[i] || "Çalışılacak";
+    if (cat !== "Tümü" && item[0] !== cat) return;
+    if (st !== "Tümü" && status !== st) return;
+    if (q && !item.some(field => field.toLowerCase().includes(q))) return;
+    result.push(i);
+  });
+  return result;
+}
+
+function renderList() {
   const listEl = document.getElementById("questionList");
   listEl.innerHTML = "";
 
   let learnedCount = 0;
   SORULAR.forEach((item, i) => {
+    if ((progress[i] || "Çalışılacak") === "Öğrenildi") learnedCount++;
+  });
+
+  const visibleIndices = getFilteredIndices();
+  visibleIndices.forEach(i => {
+    const item = SORULAR[i];
     const status = progress[i] || "Çalışılacak";
-    if (status === "Öğrenildi") learnedCount++;
-
-    if (cat !== "Tümü" && item[0] !== cat) return;
-    if (st !== "Tümü" && status !== st) return;
-    if (q && !item.some(field => field.toLowerCase().includes(q))) return;
-
     const pillClass = status === "Öğrenildi" ? "st-ogrenildi" : (status === "Tekrar Edilecek" ? "st-tekrar" : "st-calisilacak");
     const div = document.createElement("div");
     div.className = "q-item" + (i === selectedIdx ? " active" : "");
-    div.onclick = () => selectQuestion(i);
+    div.onclick = () => selectQuestion(i, true);
     div.innerHTML = `
       <div>
         <div class="q-meta">#${i + 1} • ${item[0]}</div>
@@ -618,7 +649,8 @@ function renderList() {
   document.getElementById("progressBadge").textContent = `İlerleme: ${learnedCount} / ${SORULAR.length} (%${pct})`;
 }
 
-function selectQuestion(idx) {
+function selectQuestion(idx, shouldScroll = true) {
+  stopAllSpeech();
   selectedIdx = idx;
   const item = SORULAR[idx];
   document.getElementById("detailCat").textContent = `#${idx + 1} • ${item[0]}`;
@@ -627,6 +659,23 @@ function selectQuestion(idx) {
   document.getElementById("detailRoA").textContent = item[3];
   document.getElementById("detailTrA").textContent = item[4];
   renderList();
+
+  if (shouldScroll && window.innerWidth <= 860) {
+    const panel = document.getElementById("detailPanel");
+    if (panel) panel.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+}
+
+function stepQuestion(delta) {
+  const visible = getFilteredIndices();
+  if (!visible.length) return;
+  const pos = visible.indexOf(selectedIdx);
+  if (pos === -1) {
+    selectQuestion(visible[0], true);
+    return;
+  }
+  const nextPos = (pos + delta + visible.length) % visible.length;
+  selectQuestion(visible[nextPos], true);
 }
 
 function setStatus(newStatus) {
