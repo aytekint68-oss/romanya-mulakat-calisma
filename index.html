@@ -55,6 +55,19 @@
   .btn-red { background: var(--red); }
   .btn-navy { background: var(--navy); }
 
+  /* Üst Sekme Çubuğu */
+  .nav-tabs {
+    background: #162C49; padding: 8px 20px 0; display: flex; gap: 8px; flex-wrap: wrap;
+  }
+  .tab-btn {
+    background: rgba(255,255,255,0.12); color: #E2E8F0; border: none;
+    padding: 10px 18px; border-radius: 8px 8px 0 0; font-weight: 700; font-size: 0.95rem;
+    cursor: pointer; display: inline-flex; align-items: center; gap: 8px;
+  }
+  .tab-btn.active {
+    background: var(--bg); color: var(--navy);
+  }
+
   .filters {
     background: #E2E8F0; padding: 12px 20px; display: flex; flex-wrap: wrap; gap: 10px; align-items: center;
   }
@@ -68,6 +81,25 @@
     display: grid; grid-template-columns: 1.2fr 1fr; gap: 16px;
   }
   @media (max-width: 860px) { .container { grid-template-columns: 1fr; } }
+
+  .oath-container {
+    max-width: 1000px; margin: 18px auto; padding: 0 16px; display: flex; flex-direction: column; gap: 16px;
+  }
+  .oath-hero {
+    background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 20px;
+    border-left: 6px solid var(--navy);
+  }
+  .oath-line-card {
+    background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 16px 20px;
+    display: flex; flex-direction: column; gap: 8px; transition: border-color .2s, background .2s;
+  }
+  .oath-line-card.speaking {
+    border-color: var(--blue); background: #EFF6FF;
+  }
+  .oath-ro { font-size: 1.2rem; font-weight: 700; color: var(--navy); line-height: 1.45; }
+  .oath-tr { font-size: 0.98rem; color: #334155; font-style: italic; }
+  .oath-note { font-size: 0.84rem; color: var(--muted); background: #F8FAFC; padding: 6px 10px; border-radius: 5px; }
+  .hidden-text { filter: blur(6px); user-select: none; cursor: pointer; }
 
   .panel {
     background: var(--card); border: 1px solid var(--border); border-radius: 8px; overflow: hidden;
@@ -132,7 +164,7 @@
 <header>
   <div class="brand">
     <div class="flag"><span></span><span></span><span></span></div>
-    <span>ROMANYA KONSOLOSLUĞU MÜLAKAT & YEMİN ÇALIŞMA ASİSTANI <small style="opacity:.75;font-weight:400;">(v3.2)</small></span>
+    <span>ROMANYA KONSOLOSLUĞU MÜLAKAT & YEMİN ÇALIŞMA ASİSTANI <small style="opacity:.75;font-weight:400;">(v3.3)</small></span>
   </div>
   <div class="header-actions">
     <button type="button" class="btn btn-green" onclick="openExamModal()">🎙️ Mülakat Sınav Modülü</button>
@@ -140,54 +172,104 @@
   </div>
 </header>
 
-<div class="filters">
-  <select id="catFilter" onchange="renderList()"></select>
-  <select id="statusFilter" onchange="renderList()">
-    <option value="Tümü">Tüm Durumlar</option>
-    <option value="Çalışılacak">Çalışılacak</option>
-    <option value="Tekrar Edilecek">Tekrar Edilecek</option>
-    <option value="Öğrenildi">Öğrenildi</option>
-  </select>
-  <input type="text" id="searchInput" placeholder="Rumence veya Türkçe kelime ara..." oninput="renderList()">
+<div class="nav-tabs">
+  <button type="button" class="tab-btn active" id="tabBtnQuestions" onclick="switchTab('questions')">💬 Mülakat Soruları (74)</button>
+  <button type="button" class="tab-btn" id="tabBtnOath" onclick="switchTab('oath')">📜 Yemin Metni Ezber (Jurământul)</button>
 </div>
 
-<div class="container">
-  <div class="panel">
-    <div class="list-wrapper" id="questionList"></div>
+<!-- SEKME 1: MÜLAKAT SORULARI -->
+<div id="viewQuestions">
+  <div class="filters">
+    <select id="catFilter" onchange="renderList()"></select>
+    <select id="statusFilter" onchange="renderList()">
+      <option value="Tümü">Tüm Durumlar</option>
+      <option value="Çalışılacak">Çalışılacak</option>
+      <option value="Tekrar Edilecek">Tekrar Edilecek</option>
+      <option value="Öğrenildi">Öğrenildi</option>
+    </select>
+    <input type="text" id="searchInput" placeholder="Rumence veya Türkçe kelime ara..." oninput="renderList()">
   </div>
 
-  <div class="panel detail-panel">
-    <div class="cat-tag" id="detailCat">#1 • Kategori</div>
-
-    <div>
-      <div class="section-label">RUMENCE SORU</div>
-      <div class="ro-text" id="detailRoQ">-</div>
-      <div class="tr-text" id="detailTrQ">-</div>
-      <button type="button" class="btn btn-blue" onclick="speakSelected('soru')">🔊 Soruyu Sesli Dinle</button>
+  <div class="container">
+    <div class="panel">
+      <div class="list-wrapper" id="questionList"></div>
     </div>
 
-    <hr class="divider">
+    <div class="panel detail-panel">
+      <div class="cat-tag" id="detailCat">#1 • Kategori</div>
 
-    <div>
-      <div class="section-label">ÖRNEK RUMENCE CEVAP</div>
-      <div class="ro-text" id="detailRoA">-</div>
-      <div class="tr-text" id="detailTrA">-</div>
-      <button type="button" class="btn btn-teal" onclick="speakSelected('cevap')">🔊 Örnek Cevabı Dinle</button>
+      <div>
+        <div class="section-label">RUMENCE SORU</div>
+        <div class="ro-text" id="detailRoQ">-</div>
+        <div class="tr-text" id="detailTrQ">-</div>
+        <button type="button" class="btn btn-blue" onclick="speakSelected('soru')">🔊 Soruyu Sesli Dinle</button>
+      </div>
+
+      <hr class="divider">
+
+      <div>
+        <div class="section-label">ÖRNEK RUMENCE CEVAP</div>
+        <div class="ro-text" id="detailRoA">-</div>
+        <div class="tr-text" id="detailTrA">-</div>
+        <button type="button" class="btn btn-teal" onclick="speakSelected('cevap')">🔊 Örnek Cevabı Dinle</button>
+      </div>
+
+      <hr class="divider">
+
+      <div>
+        <div class="section-label" style="margin-bottom:8px;">ÇALIŞMA DURUMU</div>
+        <div class="status-buttons">
+          <button type="button" class="btn btn-gray" onclick="setStatus('Çalışılacak')">Çalışılacak</button>
+          <button type="button" class="btn btn-amber" onclick="setStatus('Tekrar Edilecek')">Tekrar Edilecek</button>
+          <button type="button" class="btn btn-green" onclick="setStatus('Öğrenildi')">Öğrenildi</button>
+        </div>
+      </div>
+
+      <div class="status-bar" id="statusBar">
+        İpucu: Köşeli parantez yerlerinde kendi bilginizi söyleyebilmeniz için kısa bekleme yapılır.
+      </div>
     </div>
+  </div>
+</div>
 
-    <hr class="divider">
-
-    <div>
-      <div class="section-label" style="margin-bottom:8px;">ÇALIŞMA DURUMU</div>
-      <div class="status-buttons">
-        <button type="button" class="btn btn-gray" onclick="setStatus('Çalışılacak')">Çalışılacak</button>
-        <button type="button" class="btn btn-amber" onclick="setStatus('Tekrar Edilecek')">Tekrar Edilecek</button>
-        <button type="button" class="btn btn-green" onclick="setStatus('Öğrenildi')">Öğrenildi</button>
+<!-- SEKME 2: YEMİN METNİ EZBER & PROVA -->
+<div id="viewOath" style="display:none;">
+  <div class="oath-container">
+    <div class="oath-hero">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;">
+        <div>
+          <div class="cat-tag" style="margin-bottom:6px;">RESMİ SADAKAT YEMİNİ • JURĂMÂNTUL DE CREDINȚĂ</div>
+          <h2 style="margin:4px 0;color:var(--navy);font-size:1.3rem;">Romanya Vatandaşlık Yemini Çalışma ve Ezber Alanı</h2>
+          <p style="margin:4px 0 0;color:#475569;font-size:0.93rem;">
+            Tören sırasında ayağa kalkarak sağ elinizi kalbinizin veya anayasanın üzerine koyup aşağıdaki metni yüksek sesle okursunuz. Cümle cümle dinleyebilir veya metni gizleyerek ezberinizi test edebilirsiniz.
+          </p>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <button type="button" class="btn btn-blue" onclick="playFullOath()">▶ Tüm Yemini Baştan Sona Dinle</button>
+          <button type="button" class="btn btn-red" onclick="stopOathPlayback()">⏹ Durdur</button>
+          <button type="button" class="btn btn-amber" id="toggleOathMaskBtn" onclick="toggleOathMask()">🙈 Ezber Testi (Rumenceyi Gizle)</button>
+        </div>
+      </div>
+      <div class="status-bar" id="oathStatusBar" style="margin-top:14px;">
+        Hazır: Cümlelerin yanındaki 🔊 butonuna basarak telaffuzu tek tek dinleyebilirsiniz.
       </div>
     </div>
 
-    <div class="status-bar" id="statusBar">
-      İpucu: Köşeli parantez yerlerinde kendi bilginizi söyleyebilmeniz için kısa bekleme yapılır.
+    <div id="oathLinesList" style="display:flex;flex-direction:column;gap:12px;"></div>
+
+    <!-- Yemin Sesli Okuma Provası -->
+    <div class="oath-hero" style="border-left-color:var(--teal);">
+      <div class="section-label">MİKROFONLA YEMİN OKUMA PROVASI</div>
+      <h3 style="margin:6px 0;color:var(--navy);">🎙️ Yemini Baştan Sona Sesli Okuyun ve Telaffuzunuzu Ölçün</h3>
+      <p style="margin:0 0 10px;color:#475569;font-size:0.9rem;">
+        Butona basın ve tüm yemin metnini tek nefeste veya sakin tempoda okuyun. Sistem algıladığı kelimeleri resmi metinle karşılaştırır.
+      </p>
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+        <button type="button" class="btn btn-red" id="oathMicBtn" onclick="startOathVoiceTest()">🎙️ Yemini Sesli Oku (Başlat)</button>
+        <span id="oathMicStatus" style="font-size:0.9rem;color:#475569;font-style:italic;">Hazır</span>
+      </div>
+      <textarea id="oathTranscriptBox" rows="3" class="exam-input" placeholder="Okuduğunuz Rumence yemin metni burada görünecektir..."></textarea>
+      <div id="oathEvalResult" style="margin-top:10px;font-weight:700;color:var(--navy);"></div>
     </div>
   </div>
 </div>
@@ -205,6 +287,24 @@
 
 <script>
 const WORKER_URL = "https://romence-ses.aytekint68.workers.dev";
+
+const YEMIN_CUMLELERI = [
+  {
+    ro: "Jur să fiu devotat patriei și poporului român,",
+    tr: "Vatanıma ve Rumen halkına bağlı kalacağıma,",
+    not: "Telaffuz ipucu: 'Jur' (Jur - j sesi Türkçe 'j' gibi), 'patriei' (pat-ri-yey), 'român' (ro-mın)."
+  },
+  {
+    ro: "să apăr drepturile și interesele naționale,",
+    tr: "ulusal hakları ve çıkarları savunacağıma,",
+    not: "Telaffuz ipucu: 'să apăr' (sı a-pır), 'drepturile' (drep-tu-ri-le), 'naționale' (na-tsi-o-na-le)."
+  },
+  {
+    ro: "să respect Constituția și legile României.",
+    tr: "Romanya Anayasası'na ve yasalarına saygı göstereceğime yemin ederim.",
+    not: "Telaffuz ipucu: 'Constituția' (Kon-sti-tut-si-ya), 'legile' (le-ci-le), 'României' (Ro-mı-ni-yey)."
+  }
+];
 
 const SORULAR = [
   ["1. Tanışma ve Kişisel Bilgiler", "Cum vă cheamă?", "Adınız nedir? (Resmi)", "Mă cheamă [Adınız Soyadınız].", "Adım [Adınız Soyadınız]."],
@@ -297,6 +397,7 @@ let selectedIdx = 0;
 let progress = JSON.parse(localStorage.getItem("ro_mulakat_progress") || "{}");
 let speakToken = 0;
 let currentAudio = null;
+let oathMasked = false;
 
 function stopAllSpeech() {
   speakToken++;
@@ -310,6 +411,16 @@ function stopAllSpeech() {
   if ("speechSynthesis" in window) {
     speechSynthesis.cancel();
   }
+  document.querySelectorAll(".oath-line-card").forEach(c => c.classList.remove("speaking"));
+}
+
+function switchTab(tab) {
+  stopAllSpeech();
+  const isQ = tab === "questions";
+  document.getElementById("viewQuestions").style.display = isQ ? "block" : "none";
+  document.getElementById("viewOath").style.display = isQ ? "none" : "block";
+  document.getElementById("tabBtnQuestions").classList.toggle("active", isQ);
+  document.getElementById("tabBtnOath").classList.toggle("active", !isQ);
 }
 
 function init() {
@@ -322,8 +433,155 @@ function init() {
   });
   renderList();
   selectQuestion(0);
+  renderOathSection();
 }
 
+/* --- YEMİN METNİ EZBER BÖLÜMÜ --- */
+function renderOathSection() {
+  const listEl = document.getElementById("oathLinesList");
+  listEl.innerHTML = YEMIN_CUMLELERI.map((line, i) => `
+    <div class="oath-line-card" id="oathCard_${i}">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;">
+        <span class="cat-tag">Bölüm ${i + 1} / ${YEMIN_CUMLELERI.length}</span>
+        <button type="button" class="btn btn-teal" onclick="playOathLine(${i})">🔊 Bu Cümleyi Dinle</button>
+      </div>
+      <div class="oath-ro ${oathMasked ? "hidden-text" : ""}" onclick="this.classList.remove('hidden-text')">${line.ro}</div>
+      <div class="oath-tr">${line.tr}</div>
+      <div class="oath-note">💡 ${line.not}</div>
+    </div>
+  `).join("");
+}
+
+function toggleOathMask() {
+  oathMasked = !oathMasked;
+  document.getElementById("toggleOathMaskBtn").textContent = oathMasked
+    ? "👁️ Rumence Metni Göster"
+    : "🙈 Ezber Testi (Rumenceyi Gizle)";
+  renderOathSection();
+}
+
+async function playOathLine(idx) {
+  stopAllSpeech();
+  const myToken = speakToken;
+  const line = YEMIN_CUMLELERI[idx];
+  const card = document.getElementById("oathCard_" + idx);
+  const statusEl = document.getElementById("oathStatusBar");
+  if (card) card.classList.add("speaking");
+  if (statusEl) statusEl.textContent = `🔊 Okunuyor (Bölüm ${idx + 1}): ${line.ro}`;
+
+  await speakPart(line.ro, myToken);
+
+  if (myToken === speakToken) {
+    if (card) card.classList.remove("speaking");
+    if (statusEl) statusEl.textContent = `✔ Tamamlandı: ${line.ro}`;
+  }
+}
+
+async function playFullOath() {
+  stopAllSpeech();
+  const myToken = speakToken;
+  const statusEl = document.getElementById("oathStatusBar");
+
+  for (let i = 0; i < YEMIN_CUMLELERI.length; i++) {
+    if (myToken !== speakToken) return;
+    const card = document.getElementById("oathCard_" + i);
+    document.querySelectorAll(".oath-line-card").forEach(c => c.classList.remove("speaking"));
+    if (card) card.classList.add("speaking");
+    if (statusEl) statusEl.textContent = `🔊 Okunuyor (${i + 1}/${YEMIN_CUMLELERI.length}): ${YEMIN_CUMLELERI[i].ro}`;
+
+    await speakPart(YEMIN_CUMLELERI[i].ro, myToken);
+    if (i < YEMIN_CUMLELERI.length - 1 && myToken === speakToken) {
+      await new Promise(r => setTimeout(r, 350));
+    }
+  }
+
+  if (myToken === speakToken) {
+    document.querySelectorAll(".oath-line-card").forEach(c => c.classList.remove("speaking"));
+    if (statusEl) statusEl.textContent = "✔ Tüm yemin metni tamamlandı.";
+  }
+}
+
+function stopOathPlayback() {
+  stopAllSpeech();
+  const statusEl = document.getElementById("oathStatusBar");
+  if (statusEl) statusEl.textContent = "⏹ Okuma durduruldu.";
+}
+
+async function startOathVoiceTest() {
+  const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SpeechRec) {
+    alert("Bu tarayıcıda ses tanıma desteklenmiyor. Lütfen Google Chrome veya Microsoft Edge kullanın.");
+    return;
+  }
+  stopAllSpeech();
+
+  const micBtn = document.getElementById("oathMicBtn");
+  const micStatus = document.getElementById("oathMicStatus");
+  const boxEl = document.getElementById("oathTranscriptBox");
+  const resEl = document.getElementById("oathEvalResult");
+
+  if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      stream.getTracks().forEach(t => t.stop());
+    } catch (err) {
+      micStatus.textContent = "Mikrofon izni reddedildi. Adres çubuğundan mikrofona izin verin.";
+      micStatus.style.color = "#DC2626";
+      return;
+    }
+  }
+
+  const rec = new SpeechRec();
+  rec.lang = "ro-RO";
+  rec.interimResults = true;
+  rec.continuous = false;
+
+  let finalTxt = "";
+  let gotResult = false;
+  boxEl.value = "";
+  resEl.textContent = "";
+
+  micBtn.disabled = true;
+  micBtn.textContent = "🔴 Dinleniyor... Yemini Okuyun";
+  micStatus.textContent = "Mikrofon açık, yemini okuyun...";
+  micStatus.style.color = "#DC2626";
+
+  rec.onresult = (e) => {
+    gotResult = true;
+    let interim = "";
+    for (let i = e.resultIndex; i < e.results.length; i++) {
+      const txt = e.results[i][0].transcript;
+      if (e.results[i].isFinal) finalTxt += txt + " ";
+      else interim += txt;
+    }
+    boxEl.value = (finalTxt + interim).trim();
+  };
+
+  rec.onerror = (e) => {
+    micStatus.textContent = "Mikrofon hatası: " + e.error;
+    micStatus.style.color = "#DC2626";
+  };
+
+  rec.onend = () => {
+    micBtn.disabled = false;
+    micBtn.textContent = "🎙️ Yemini Sesli Oku (Başlat)";
+    if (gotResult && boxEl.value.trim()) {
+      micStatus.textContent = "✔ Okuma tamamlandı";
+      micStatus.style.color = "#16A34A";
+      const fullOathNorm = normalizeRo(YEMIN_CUMLELERI.map(x => x.ro).join(" "));
+      const targetWords = fullOathNorm.split(" ").filter(Boolean);
+      const userWords = new Set(normalizeRo(boxEl.value).split(" "));
+      const matched = targetWords.filter(w => userWords.has(w)).length;
+      const score = Math.min(100, Math.round((matched / targetWords.length) * 100));
+      resEl.style.color = score >= 80 ? "#16A34A" : (score >= 50 ? "#D97706" : "#DC2626");
+      resEl.textContent = `Yemin Telaffuz Uyum Puanı: %${score} (${matched} / ${targetWords.length} kelime doğru algılandı)`;
+    }
+  };
+
+  rec.start();
+}
+
+/* --- SORU LİSTESİ VE DETAY PANELİ --- */
 function renderList() {
   const cat = document.getElementById("catFilter").value;
   const st = document.getElementById("statusFilter").value;
