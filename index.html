@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
@@ -74,6 +74,7 @@
   .btn {
     border: none; border-radius: 6px; padding: 8px 14px; font-weight: 600; cursor: pointer;
     font-size: 0.9rem; color: #fff; display: inline-flex; align-items: center; gap: 6px; transition: opacity .15s;
+    text-decoration: none;
   }
   .btn:hover { opacity: 0.9; }
   .btn:disabled { opacity: 0.5; cursor: not-allowed; }
@@ -86,7 +87,7 @@
   .btn-navy { background: var(--navy); }
   .btn-sm { padding: 6px 10px; font-size: 0.82rem; }
 
-  /* Masaüstü 3 Sekmeli Çubuk */
+  /* Masaüstü 4 Sekmeli Çubuk */
   .nav-tabs {
     background: #162C49; padding: 8px 20px 0; display: flex; gap: 8px; flex-wrap: wrap;
   }
@@ -149,12 +150,26 @@
   .list-panel { order: 1; }
   .detail-panel { order: 2; }
 
-  .oath-container, .exam-page-container {
-    max-width: 1000px; margin: 18px auto; padding: 0 16px; display: flex; flex-direction: column; gap: 16px;
+  .oath-container, .exam-page-container, .dosya-container {
+    max-width: 1100px; margin: 18px auto; padding: 0 16px; display: flex; flex-direction: column; gap: 16px;
   }
-  .oath-hero, .exam-card {
+  .oath-hero, .exam-card, .dosya-card {
     background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 20px;
     border-left: 6px solid var(--navy);
+  }
+  .dosya-iframe-wrap {
+    width: 100%;
+    height: 76vh;
+    min-height: 520px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    background: #fff;
+  }
+  .dosya-iframe-wrap iframe {
+    width: 100%;
+    height: 100%;
+    border: 0;
   }
   .oath-line-card {
     background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 16px 20px;
@@ -259,9 +274,10 @@
     .list-panel { order: 2; }
     .list-wrapper { max-height: 44vh; }
 
-    .exam-page-container { margin: 10px auto; padding: 0 10px; }
-    .exam-card { padding: 14px; }
+    .exam-page-container, .dosya-container { margin: 10px auto; padding: 0 10px; }
+    .exam-card, .dosya-card { padding: 14px; }
     .box { padding: 12px; }
+    .dosya-iframe-wrap { height: 68vh; min-height: 420px; }
   }
 </style>
 </head>
@@ -275,7 +291,7 @@
       <div class="brand-title">
         <span class="brand-main">ROMANYA KONSOLOSLUĞU</span>
         <span class="brand-sep">-</span>
-        <span class="brand-sub">RUMENCE MÜLAKAT VE YEMİN ASİSTANI <small style="opacity:.75;font-weight:400;">(v3.12)</small></span>
+        <span class="brand-sub">RUMENCE MÜLAKAT VE YEMİN ASİSTANI <small style="opacity:.75;font-weight:400;">(v3.13)</small></span>
       </div>
     </div>
   </div>
@@ -295,13 +311,18 @@
     <span>🎙️ Mülakat Sınav Modülü</span>
     <span id="mobCheckExam"></span>
   </button>
+  <button type="button" class="mobile-menu-item" id="mobBtnDosya" onclick="selectMobileTab('dosya')">
+    <span>🔍 Romanya Vatandaşlık Dosya Sorgulama</span>
+    <span id="mobCheckDosya"></span>
+  </button>
 </div>
 
-<!-- Masaüstü 3 Sekmeli Çubuk -->
+<!-- Masaüstü 4 Sekmeli Çubuk -->
 <div class="nav-tabs">
   <button type="button" class="tab-btn active" id="tabBtnQuestions" onclick="switchTab('questions')">💬 Mülakat Soruları</button>
   <button type="button" class="tab-btn" id="tabBtnOath" onclick="switchTab('oath')">📜 Yemin Metni Ezber (Jurământul)</button>
   <button type="button" class="tab-btn" id="tabBtnExam" onclick="switchTab('exam')">🎙️ Mülakat Sınav Modülü</button>
+  <button type="button" class="tab-btn" id="tabBtnDosya" onclick="switchTab('dosya')">🔍 Romanya Vatandaşlık Dosya Sorgulama</button>
 </div>
 
 <!-- SEKME 1: MÜLAKAT SORULARI (Varsayılan Açık) -->
@@ -422,8 +443,33 @@
   </div>
 </div>
 
+<!-- SEKME 4: ROMANYA VATANDAŞLIK DOSYA SORGULAMA -->
+<div id="viewDosya" style="display:none;">
+  <div class="dosya-container">
+    <div class="dosya-card" style="border-left-color:var(--blue);">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:12px;">
+        <div>
+          <div class="cat-tag" style="margin-bottom:6px;">ANC DOSYA TAKİP • STADIU DOSAR</div>
+          <h2 style="margin:4px 0;color:var(--navy);font-size:1.25rem;">Romanya Vatandaşlık Dosya Sorgulama</h2>
+          <p style="margin:4px 0 0;color:#475569;font-size:0.9rem;">
+            Aşağıdaki ekrandan dosyanızın güncel durumunu sorgulayabilirsiniz. Tarayıcı veya Streamlit kısıtlaması nedeniyle çerçeve içi yüklenmezse sağdaki butona basarak tam ekran açabilirsiniz.
+          </p>
+        </div>
+        <a href="https://romanya-vatandaslik-sorgulama.streamlit.app/" target="_blank" rel="noopener noreferrer" class="btn btn-blue">
+          🌐 Yeni Sekmede Tam Ekran Aç ↗
+        </a>
+      </div>
+
+      <div class="dosya-iframe-wrap">
+        <iframe id="dosyaIframe" src="about:blank" title="Romanya Vatandaşlık Dosya Sorgulama" loading="lazy"></iframe>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script>
 const WORKER_URL = "https://romence-ses.aytekint68.workers.dev";
+const DOSYA_SORGULAMA_URL = "https://romanya-vatandaslik-sorgulama.streamlit.app/?embed=true";
 
 const YEMIN_CUMLELERI = [
   {
@@ -535,6 +581,7 @@ let progress = JSON.parse(localStorage.getItem("ro_mulakat_progress") || "{}");
 let speakToken = 0;
 let currentAudio = null;
 let oathMasked = false;
+let dosyaLoaded = false;
 
 function stopAllSpeech() {
   speakToken++;
@@ -566,25 +613,34 @@ function switchTab(tab) {
   const isQ = tab === "questions";
   const isO = tab === "oath";
   const isE = tab === "exam";
+  const isD = tab === "dosya";
 
   document.getElementById("viewQuestions").style.display = isQ ? "block" : "none";
   document.getElementById("viewOath").style.display = isO ? "block" : "none";
   document.getElementById("viewExam").style.display = isE ? "block" : "none";
+  document.getElementById("viewDosya").style.display = isD ? "block" : "none";
 
   document.getElementById("tabBtnQuestions").classList.toggle("active", isQ);
   document.getElementById("tabBtnOath").classList.toggle("active", isO);
   document.getElementById("tabBtnExam").classList.toggle("active", isE);
+  document.getElementById("tabBtnDosya").classList.toggle("active", isD);
 
   document.getElementById("mobBtnQuestions").classList.toggle("active", isQ);
   document.getElementById("mobBtnOath").classList.toggle("active", isO);
   document.getElementById("mobBtnExam").classList.toggle("active", isE);
+  document.getElementById("mobBtnDosya").classList.toggle("active", isD);
 
   document.getElementById("mobCheckQuestions").textContent = isQ ? "✔" : "";
   document.getElementById("mobCheckOath").textContent = isO ? "✔" : "";
   document.getElementById("mobCheckExam").textContent = isE ? "✔" : "";
+  document.getElementById("mobCheckDosya").textContent = isD ? "✔" : "";
 
   if (isE) {
     renderExamSetup();
+  }
+  if (isD && !dosyaLoaded) {
+    document.getElementById("dosyaIframe").src = DOSYA_SORGULAMA_URL;
+    dosyaLoaded = true;
   }
 }
 
