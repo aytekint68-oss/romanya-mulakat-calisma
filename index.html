@@ -151,25 +151,11 @@
   .detail-panel { order: 2; }
 
   .oath-container, .exam-page-container, .dosya-container {
-    max-width: 1100px; margin: 18px auto; padding: 0 16px; display: flex; flex-direction: column; gap: 16px;
+    max-width: 1000px; margin: 18px auto; padding: 0 16px; display: flex; flex-direction: column; gap: 16px;
   }
   .oath-hero, .exam-card, .dosya-card {
     background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 20px;
     border-left: 6px solid var(--navy);
-  }
-  .dosya-iframe-wrap {
-    width: 100%;
-    height: 76vh;
-    min-height: 520px;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    overflow: hidden;
-    background: #fff;
-  }
-  .dosya-iframe-wrap iframe {
-    width: 100%;
-    height: 100%;
-    border: 0;
   }
   .oath-line-card {
     background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 16px 20px;
@@ -277,7 +263,6 @@
     .exam-page-container, .dosya-container { margin: 10px auto; padding: 0 10px; }
     .exam-card, .dosya-card { padding: 14px; }
     .box { padding: 12px; }
-    .dosya-iframe-wrap { height: 68vh; min-height: 420px; }
   }
 </style>
 </head>
@@ -291,7 +276,7 @@
       <div class="brand-title">
         <span class="brand-main">ROMANYA KONSOLOSLUĞU</span>
         <span class="brand-sep">-</span>
-        <span class="brand-sub">RUMENCE MÜLAKAT VE YEMİN ASİSTANI <small style="opacity:.75;font-weight:400;">(v3.15)</small></span>
+        <span class="brand-sub">RUMENCE MÜLAKAT VE YEMİN ASİSTANI <small style="opacity:.75;font-weight:400;">(v3.16)</small></span>
       </div>
     </div>
   </div>
@@ -447,29 +432,20 @@
 <div id="viewDosya" style="display:none;">
   <div class="dosya-container">
     <div class="dosya-card" style="border-left-color:var(--blue);">
-      <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:12px;">
-        <div>
-          <div class="cat-tag" style="margin-bottom:6px;">ANC DOSYA TAKİP • STADIU DOSAR</div>
-          <h2 style="margin:4px 0;color:var(--navy);font-size:1.25rem;">Romanya Vatandaşlık Dosya Sorgulama</h2>
-          <p style="margin:4px 0 0;color:#475569;font-size:0.9rem;">
-            Aşağıdaki ekrandan dosyanızın güncel durumunu sorgulayabilirsiniz. Çerçeve içi yüklenmezse sağdaki butona basarak tam ekran açabilirsiniz.
-          </p>
-        </div>
-        <a href="https://anc-pwa.onrender.com/" target="_blank" rel="noopener noreferrer" class="btn btn-blue">
-          🌐 Yeni Sekmede Tam Ekran Aç ↗
-        </a>
-      </div>
-
-      <div class="dosya-iframe-wrap">
-        <iframe id="dosyaIframe" src="about:blank" title="Romanya Vatandaşlık Dosya Sorgulama" loading="lazy"></iframe>
-      </div>
+      <div class="cat-tag" style="margin-bottom:8px;">ANC DOSYA TAKİP • STADIU DOSAR</div>
+      <h2 style="margin:4px 0 8px;color:var(--navy);font-size:1.25rem;">Romanya Vatandaşlık Dosya Sorgulama</h2>
+      <p style="margin:0 0 16px;color:#334155;font-size:0.96rem;line-height:1.5;">
+        Dosyanızın güncel durumunu sorgulamak için aşağıdaki butona tıklayarak yeni sekmede açınız.
+      </p>
+      <a href="https://anc-pwa.onrender.com/" target="_blank" rel="noopener noreferrer" class="btn btn-blue" style="padding:11px 18px;font-size:0.96rem;">
+        🌐 Dosya Sorgulama Ekranını Yeni Sekmede Aç ↗
+      </a>
     </div>
   </div>
 </div>
 
 <script>
 const WORKER_URL = "https://romence-ses.aytekint68.workers.dev";
-const DOSYA_SORGULAMA_URL = "https://anc-pwa.onrender.com/";
 
 const YEMIN_CUMLELERI = [
   {
@@ -581,7 +557,6 @@ let progress = JSON.parse(localStorage.getItem("ro_mulakat_progress") || "{}");
 let speakToken = 0;
 let currentAudio = null;
 let oathMasked = false;
-let dosyaLoaded = false;
 
 function stopAllSpeech() {
   speakToken++;
@@ -637,10 +612,6 @@ function switchTab(tab) {
 
   if (isE) {
     renderExamSetup();
-  }
-  if (isD && !dosyaLoaded) {
-    document.getElementById("dosyaIframe").src = DOSYA_SORGULAMA_URL;
-    dosyaLoaded = true;
   }
 }
 
@@ -815,13 +786,20 @@ function startOathVoiceTest() {
 function getFilteredIndices() {
   const cat = document.getElementById("catFilter").value;
   const st = document.getElementById("statusFilter").value;
-  const q = document.getElementById("searchInput").value.trim().toLowerCase();
+  const qNorm = normalizeRo(document.getElementById("searchInput").value);
+  const queryTerms = qNorm ? qNorm.split(" ") : [];
+
   const result = [];
   SORULAR.forEach((item, i) => {
     const status = progress[i] || "Çalışılacak";
     if (cat !== "Tümü" && item[0] !== cat) return;
     if (st !== "Tümü" && status !== st) return;
-    if (q && !item.some(field => field.toLowerCase().includes(q))) return;
+
+    if (queryTerms.length) {
+      const roWords = normalizeRo(item[1] + " " + item[3]).split(" ").filter(Boolean);
+      const allMatch = queryTerms.every(term => roWords.some(w => w.startsWith(term)));
+      if (!allMatch) return;
+    }
     result.push(i);
   });
   return result;
