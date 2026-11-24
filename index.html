@@ -291,7 +291,7 @@
       <div class="brand-title">
         <span class="brand-main">ROMANYA KONSOLOSLUĞU</span>
         <span class="brand-sep">-</span>
-        <span class="brand-sub">RUMENCE MÜLAKAT VE YEMİN ASİSTANI <small style="opacity:.75;font-weight:400;">(v3.14)</small></span>
+        <span class="brand-sub">RUMENCE MÜLAKAT VE YEMİN ASİSTANI <small style="opacity:.75;font-weight:400;">(v3.15)</small></span>
       </div>
     </div>
   </div>
@@ -452,10 +452,10 @@
           <div class="cat-tag" style="margin-bottom:6px;">ANC DOSYA TAKİP • STADIU DOSAR</div>
           <h2 style="margin:4px 0;color:var(--navy);font-size:1.25rem;">Romanya Vatandaşlık Dosya Sorgulama</h2>
           <p style="margin:4px 0 0;color:#475569;font-size:0.9rem;">
-            Aşağıdaki ekrandan dosyanızın güncel durumunu sorgulayabilirsiniz. Tarayıcı veya Streamlit kısıtlaması nedeniyle çerçeve içi yüklenmezse sağdaki butona basarak tam ekran açabilirsiniz.
+            Aşağıdaki ekrandan dosyanızın güncel durumunu sorgulayabilirsiniz. Çerçeve içi yüklenmezse sağdaki butona basarak tam ekran açabilirsiniz.
           </p>
         </div>
-        <a href="https://romanya-vatandaslik-sorgulama.streamlit.app/" target="_blank" rel="noopener noreferrer" class="btn btn-blue">
+        <a href="https://anc-pwa.onrender.com/" target="_blank" rel="noopener noreferrer" class="btn btn-blue">
           🌐 Yeni Sekmede Tam Ekran Aç ↗
         </a>
       </div>
@@ -469,7 +469,7 @@
 
 <script>
 const WORKER_URL = "https://romence-ses.aytekint68.workers.dev";
-const DOSYA_SORGULAMA_URL = "https://romanya-vatandaslik-sorgulama.streamlit.app/?embed=true";
+const DOSYA_SORGULAMA_URL = "https://anc-pwa.onrender.com/";
 
 const YEMIN_CUMLELERI = [
   {
@@ -815,21 +815,13 @@ function startOathVoiceTest() {
 function getFilteredIndices() {
   const cat = document.getElementById("catFilter").value;
   const st = document.getElementById("statusFilter").value;
-  const qNorm = normalizeRo(document.getElementById("searchInput").value);
-  const queryTerms = qNorm ? qNorm.split(" ") : [];
-
+  const q = document.getElementById("searchInput").value.trim().toLowerCase();
   const result = [];
   SORULAR.forEach((item, i) => {
     const status = progress[i] || "Çalışılacak";
     if (cat !== "Tümü" && item[0] !== cat) return;
     if (st !== "Tümü" && status !== st) return;
-
-    if (queryTerms.length) {
-      // Yalnızca Rumence Soru (item[1]) ve Rumence Cevap (item[3]) kelimelerinde ara
-      const roWords = normalizeRo(item[1] + " " + item[3]).split(" ").filter(Boolean);
-      const allMatch = queryTerms.every(term => roWords.some(w => w.startsWith(term)));
-      if (!allMatch) return;
-    }
+    if (q && !item.some(field => field.toLowerCase().includes(q))) return;
     result.push(i);
   });
   return result;
