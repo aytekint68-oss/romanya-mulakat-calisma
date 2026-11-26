@@ -276,7 +276,7 @@
       <div class="brand-title">
         <span class="brand-main">ROMANYA KONSOLOSLUĞU</span>
         <span class="brand-sep">-</span>
-        <span class="brand-sub">RUMENCE MÜLAKAT VE YEMİN ASİSTANI <small style="opacity:.75;font-weight:400;">(v3.16)</small></span>
+        <span class="brand-sub">RUMENCE MÜLAKAT VE YEMİN ASİSTANI <small style="opacity:.75;font-weight:400;">(v3.18)</small></span>
       </div>
     </div>
   </div>
@@ -330,7 +330,7 @@
 
     <div class="panel detail-panel" id="detailPanel">
       <div class="detail-top-bar">
-        <div class="cat-tag" id="detailCat">#1 • Kategori</div>
+        <div class="cat-tag" id="detailCat">#1 / 104 • Kategori</div>
         <div class="nav-arrows">
           <button type="button" class="btn btn-navy btn-sm" onclick="stepQuestion(-1)">⬅ Önceki</button>
           <button type="button" class="btn btn-navy btn-sm" onclick="stepQuestion(1)">Sonraki ➡</button>
@@ -369,7 +369,7 @@
       </div>
 
       <!-- PC ve Mobilde Soru-Cevap Paneli Altında İlerleme Durumu -->
-      <div class="progress-box" id="progressBadge">İlerleme: 0 / 74 (%0)</div>
+      <div class="progress-box" id="progressBadge">İlerleme: 0 / 104 (%0)</div>
     </div>
   </div>
 </div>
@@ -549,7 +549,40 @@ const SORULAR = [
   ["10. Konsolosluk ve Yemin İşlemleri", "Îmi dați actele, vă rog?", "Evrakları bana verir misiniz lütfen?", "Da, poftiți actele mele.", "Evet, buyurun evraklarım."],
   ["10. Konsolosluk ve Yemin İşlemleri", "Aveți toate actele?", "Tüm evraklarınız tam mı?", "Da, am toate actele necesare la mine.", "Evet, gerekli tüm evraklar yanımda."],
   ["10. Konsolosluk ve Yemin İşlemleri", "Ce acte aveți?", "Hangi evraklarınız var?", "Am pașaportul, buletinul, certificatul de naștere și pozele.", "Pasaportum, kimliğim, doğum belgem ve fotoğraflarım var."],
-  ["10. Konsolosluk ve Yemin İşlemleri", "Ce acte ați adus?", "Hangi evrakları getirdiniz?", "Am adus toate documentele cerute de consulat, inclusiv confirmarea programării.", "Randevu onayı dahil konsolosluğun istediği tüm belgeleri getirdim."]
+  ["10. Konsolosluk ve Yemin İşlemleri", "Ce acte ați adus?", "Hangi evrakları getirdiniz?", "Am adus toate documentele cerute de consulat, inclusiv confirmarea programării.", "Randevu onayı dahil konsolosluğun istediği tüm belgeleri getirdim."],
+
+  ["11. Romanya Tarihi, Kültürü ve Sembolleri", "Când este Ziua Națională a României?", "Romanya'nın Milli Bayramı ne zamandır?", "Ziua Națională a României este pe întâi decembrie.", "Romanya'nın Milli Bayramı 1 Aralık'tır."],
+  ["11. Romanya Tarihi, Kültürü ve Sembolleri", "Care este imnul național al României?", "Romanya'nın milli marşı nedir?", "Imnul național al României este „Deșteaptă-te, române!”.", "Romanya'nın milli marşı 'Deșteaptă-te, române!' (Uyan, Rumen!)'dir."],
+  ["11. Romanya Tarihi, Kültürü ve Sembolleri", "Care este moneda națională a României?", "Romanya'nın para birimi nedir?", "Moneda națională a României este leul românesc.", "Romanya'nın para birimi Rumen Leyi'dir (RON)."],
+  ["11. Romanya Tarihi, Kültürü ve Sembolleri", "Ce mare se află la est de România?", "Romanya'nın doğusunda hangi deniz bulunur?", "La est de România se află Marea Neagră.", "Romanya'nın doğusunda Karadeniz bulunur."],
+  ["11. Romanya Tarihi, Kültürü ve Sembolleri", "Ce munți sunt în România?", "Romanya'da hangi dağlar vardır?", "În România sunt Munții Carpați.", "Romanya'da Karpat Dağları vardır."],
+  ["11. Romanya Tarihi, Kültürü ve Sembolleri", "Ce regiuni istorice din România cunoașteți?", "Romanya'nın hangi tarihi bölgelerini biliyorsunuz?", "Cunosc Dobrogea, Transilvania, Moldova și Muntenia.", "Dobruca, Transilvanya, Boğdan (Moldova) ve Eflak (Muntenia) bölgelerini biliyorum."],
+  ["11. Romanya Tarihi, Kültürü ve Sembolleri", "În ce regiune s-a născut bunicul dumneavoastră?", "Büyükbabanız hangi bölgede doğdu?", "Bunicul meu s-a născut în Dobrogea, lângă Constanța.", "Dedem Dobruca bölgesinde, Köstence yakınlarında doğdu."],
+  ["11. Romanya Tarihi, Kültürü ve Sembolleri", "Cunoașteți scriitori sau artiști români?", "Tanıdığınız Rumen yazar veya sanatçılar var mı?", "Da, îi cunosc pe poetul Mihai Eminescu și pe sculptorul Constantin Brâncuși.", "Evet, şair Mihai Eminescu'yu ve heykeltıraş Constantin Brâncuși'yi tanıyorum."],
+  ["11. Romanya Tarihi, Kültürü ve Sembolleri", "Când a intrat România în Uniunea Europeană?", "Romanya Avrupa Birliği'ne ne zaman girdi?", "România a intrat în Uniunea Europeană în anul două mii șapte.", "Romanya Avrupa Birliği'ne 2007 yılında girdi."],
+  ["11. Romanya Tarihi, Kültürü ve Sembolleri", "Ce religie predomină în România?", "Romanya'da hangi din yaygındır?", "Majoritatea cetățenilor români sunt creștini ortodocși.", "Romanya vatandaşlarının çoğunluğu Ortodoks Hristiyandır."],
+
+  ["12. Gelecek Planları ve Vatandaşlık Sonrası", "Ce planuri aveți după obținerea cetățeniei?", "Vatandaşlığı aldıktan sonra ne gibi planlarınız var?", "Doresc să vizitez mai des România și să îmi dezvolt afacerile în Europa.", "Romanya'yı daha sık ziyaret etmek ve Avrupa'da işlerimi geliştirmek istiyorum."],
+  ["12. Gelecek Planları ve Vatandaşlık Sonrası", "Intenționați să vă mutați în România?", "Romanya'ya taşınmayı düşünüyor musunuz?", "Deocamdată locuiesc în Turcia, dar pe viitor iau în considerare acest lucru.", "Şimdilik Türkiye'de yaşıyorum ama gelecekte bunu değerlendiriyorum."],
+  ["12. Gelecek Planları ve Vatandaşlık Sonrası", "Vreți să lucrați în România sau în Europa?", "Romanya'da veya Avrupa'da çalışmak istiyor musunuz?", "Da, cetățenia română îmi va oferi noi oportunități profesionale.", "Evet, Romanya vatandaşlığı bana yeni mesleki fırsatlar sunacaktır."],
+  ["12. Gelecek Planları ve Vatandaşlık Sonrası", "Veți solicita și pașaportul românesc?", "Rumen pasaportu da çıkartacak mısınız?", "Da, după depunerea jurământului voi solicita certificatul de naștere și pașaportul.", "Evet, yemin töreninden sonra doğum belgesi ve pasaport başvurusu yapacağım."],
+  ["12. Gelecek Planları ve Vatandaşlık Sonrası", "Copiii dumneavoastră vor avea și ei cetățenie?", "Çocuklarınız da vatandaşlık alacak mı?", "Da, copiii mei minori vor primi cetățenia odată cu mine.", "Evet, reşit olmayan çocuklarım benimle birlikte vatandaşlık alacak."],
+  ["12. Gelecek Planları ve Vatandaşlık Sonrası", "Veți continua să învățați limba română?", "Rumence öğrenmeye devam edecek misiniz?", "Da, cu siguranță! Vreau să vorbesc fluent limba română.", "Evet, kesinlikle! Rumenceyi akıcı şekilde konuşmak istiyorum."],
+  ["12. Gelecek Planları ve Vatandaşlık Sonrası", "Aveți rude sau prieteni în România?", "Romanya'da akrabanız veya arkadaşınız var mı?", "Da, am câțiva prieteni în București și rude îndepărtate în Constanța.", "Evet, Bükreş'te birkaç arkadaşım ve Köstence'de uzak akrabalarım var."],
+  ["12. Gelecek Planları ve Vatandaşlık Sonrası", "Ce vă place cel mai mult la România?", "Romanya'da en çok neyi seviyorsunuz?", "Îmi plac natura, orașele istorice și ospitalitatea oamenilor.", "Doğasını, tarihi şehirlerini ve insanların misafirperverliğini seviyorum."],
+
+  ["13. Günlük Hayat, Hobiler ve Yemek Kültürü", "Ce faceți în timpul liber?", "Boş zamanlarınızda ne yaparsınız?", "În timpul liber citesc cărți, fac sport și petrec timp cu familia.", "Boş zamanlarımda kitap okurum, spor yaparım ve ailemle vakit geçiririm."],
+  ["13. Günlük Hayat, Hobiler ve Yemek Kültürü", "Ce hobby-uri aveți?", "Hobileriniz nelerdir?", "Îmi place să călătoresc, să gătesc și să învăț limbi străine.", "Seyahat etmeyi, yemek yapmayı ve yabancı dil öğrenmeyi severim."],
+  ["13. Günlük Hayat, Hobiler ve Yemek Kültürü", "Ați gustat mâncare tradițională românească?", "Geleneksel Rumen yemeklerinin tadına baktınız mı?", "Da, am gustat sarmale, mămăligă și ciorbă de burtă. Sunt foarte gustoase!", "Evet; sarma, mamaliga ve işkembe çorbasının tadına baktım. Çok lezzetliler!"],
+  ["13. Günlük Hayat, Hobiler ve Yemek Kültürü", "Cum ați venit astăzi la consulat?", "Bugün konsolosluğa nasıl geldiniz?", "Am venit cu mașina personală. / Am venit cu avionul din [Şehir].", "Şahsi aracımla geldim. / [Şehir]'dan uçakla geldim."],
+  ["13. Günlük Hayat, Hobiler ve Yemek Kültürü", "Cum este vremea astăzi?", "Bugün hava nasıl?", "Astăzi este o zi frumoasă și însorită.", "Bugün güzel ve güneşli bir gün."],
+  ["13. Günlük Hayat, Hobiler ve Yemek Kültürü", "Aveți frați sau surori?", "Erkek veya kız kardeşiniz var mı?", "Da, am un frate și o soră.", "Evet, bir erkek kardeşim ve bir kız kardeşim var."],
+  ["13. Günlük Hayat, Hobiler ve Yemek Kültürü", "Cum o cheamă pe soția dumneavoastră?", "Eşinizin adı nedir?", "Pe soția mea o cheamă [Eşinizin Adı].", "Eşimin adı [Eşinizin Adı]."],
+  ["13. Günlük Hayat, Hobiler ve Yemek Kültürü", "De câți ani sunteți căsătorit?", "Kaç yıldır evlisiniz?", "Sunt căsătorit de [Yıl Sayısı] ani.", "[Yıl Sayısı] yıldır evliyim."],
+  ["13. Günlük Hayat, Hobiler ve Yemek Kültürü", "La ce oră v-ați trezit astăzi?", "Bugün saat kaçta uyandınız?", "M-am trezit devreme, la ora șapte dimineața.", "Erken uyandım, sabah saat yedide."],
+  ["13. Günlük Hayat, Hobiler ve Yemek Kültürü", "Ați așteptat mult afară?", "Dışarıda çok beklediniz mi?", "Nu, am așteptat doar zece minute.", "Hayır, sadece on dakika bekledim."],
+  ["13. Günlük Hayat, Hobiler ve Yemek Kültürü", "Aveți emoții astăzi?", "Bugün heyecanlı mısınız?", "Da, am puține emoții, dar sunt foarte fericit.", "Evet, biraz heyecanlıyım ama çok mutluyum."],
+  ["13. Günlük Hayat, Hobiler ve Yemek Kültürü", "Ați înțeles toate întrebările mele?", "Tüm sorularımı anladınız mı?", "Da, am înțeles totul foarte bine. Vă mulțumesc!", "Evet, her şeyi çok iyi anladım. Teşekkür ederim!"]
 ];
 
 let selectedIdx = 0;
@@ -842,7 +875,7 @@ function selectQuestion(idx, shouldScroll = true) {
   stopAllSpeech();
   selectedIdx = idx;
   const item = SORULAR[idx];
-  document.getElementById("detailCat").textContent = `#${idx + 1} • ${item[0]}`;
+  document.getElementById("detailCat").textContent = `#${idx + 1} / ${SORULAR.length} • ${item[0]}`;
   document.getElementById("detailRoQ").textContent = item[1];
   document.getElementById("detailTrQ").textContent = item[2];
   document.getElementById("detailRoA").textContent = item[3];
@@ -983,6 +1016,16 @@ let examIndex = 0;
 let examResults = [];
 let hintVisible = false;
 
+function updateExamLimitOptions() {
+  const cat = document.getElementById("examCat").value;
+  const limitSelect = document.getElementById("examLimit");
+  const poolCount = SORULAR.filter(s => cat.startsWith("Tüm") || s[0] === cat).length;
+  const allOpt = limitSelect.querySelector('option[value="999"]');
+  if (allOpt) {
+    allOpt.textContent = `Tümü (${poolCount} Soru)`;
+  }
+}
+
 function renderExamSetup() {
   stopAllSpeech();
   const cats = ["Tüm Kategoriler (Karışık)", ...new Set(SORULAR.map(s => s[0]))];
@@ -1004,7 +1047,7 @@ function renderExamSetup() {
     <div style="color:#475569;font-size:0.92rem;">Konsolosluk görevlisi soruları Rumence sesli sorar. Siz de mikrofonunuza Rumence cevap verirsiniz.</div>
     <div>
       <label style="font-weight:600;font-size:0.9rem;">Kategori:</label><br>
-      <select id="examCat" class="exam-select">
+      <select id="examCat" class="exam-select" onchange="updateExamLimitOptions()">
         ${cats.map(c => `<option value="${c}">${c}</option>`).join("")}
       </select>
     </div>
@@ -1014,7 +1057,8 @@ function renderExamSetup() {
         <option value="5">5 Soru (Hızlı Prova)</option>
         <option value="10" selected>10 Soru (Standart Mülakat)</option>
         <option value="20">20 Soru (Kapsamlı Test)</option>
-        <option value="999">Tümü</option>
+        <option value="50">50 Soru (Geniş Prova)</option>
+        <option value="999">Tümü (${SORULAR.length} Soru)</option>
       </select>
     </div>
     ${micNote}
@@ -1042,7 +1086,7 @@ function renderExamQuestion() {
   document.getElementById("examHeaderTitle").textContent = `🎙️ Mülakat Sınavı • Soru ${examIndex + 1} / ${total}`;
 
   document.getElementById("examBody").innerHTML = `
-    <div class="cat-tag">#${cur.idx + 1} • ${cur.s[0]}</div>
+    <div class="cat-tag">#${cur.idx + 1} / ${SORULAR.length} • ${cur.s[0]}</div>
     <div class="box">
       <div class="section-label">KONSOLOSLUK GÖREVLİSİ SORUYOR:</div>
       <div id="examQuestionBox" style="font-weight:700;margin:8px 0;">🔒 Soruyu dinleyin ve sesli cevap verin (Görmek için İpucu butonuna basın)</div>
